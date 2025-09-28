@@ -1,4 +1,4 @@
-# Hong Kong Horse Racing Data Scraper
+# Hong Kong Jockey Club Race Data Scraper and Analysis
 
 Currently a scraping and data processing program for Hong Kong Jockey Club horse racing results. Automatically collects historical race data and transforms it into clean, analysis-ready datasets. This project's aim is to analyze this data and  predict race results, and eventually come up with optimal betting strategies.
 
