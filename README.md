@@ -28,7 +28,7 @@ cd hk-horseracing-scraper
 
 ### 2. Run the Scraper (Test Mode)
 ```bash
-python3 horse_racing_scraper.py
+python3 datascraper.py
 ```
 The scraper starts with a small test dataset (10 dates around Christmas 2019) to verify everything works.
 
@@ -40,7 +40,7 @@ This combines and cleans all scraped CSV files into `combined_race_data.csv`.
 
 ### 4. Expand to Full Dataset
 Once testing is successful:
-1. Edit `horse_racing_scraper.py`
+1. Edit `datascraper.py`
 2. Uncomment the full dates list or modify the date range
 3. Re-run the scraper for complete historical data
 
