@@ -1,0 +1,88 @@
+2025-09-28 13:19:33,704 - INFO - Found 0 previously processed dates
+2025-09-28 13:19:33,704 - INFO - Checking: 29/12/2019
+2025-09-28 13:19:41,134 - INFO - Found 8 race entries
+2025-09-28 13:19:41,134 - INFO - Scraping: 29/12/2019
+2025-09-28 13:20:41,595 - INFO - Extracted data for first race: 
+2025-09-28 13:20:41,595 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=2
+2025-09-28 13:21:17,012 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=3
+2025-09-28 13:21:54,514 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=4
+2025-09-28 13:22:34,057 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=5
+2025-09-28 13:23:08,115 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=6
+2025-09-28 13:23:42,577 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=7
+2025-09-28 13:24:17,603 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=8
+2025-09-28 13:24:51,986 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=9
+2025-09-28 13:25:27,080 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/29&Racecourse=ST&RaceNo=10
+2025-09-28 13:26:01,483 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/ResultsAll.aspx?RaceDate=2019/12/29
+2025-09-28 13:26:45,525 - INFO - Saved ./races1.csv with 127 entries from 11 races
+2025-09-28 13:26:45,536 - INFO - Sample data:   0 1 2  3  4                       5            6         7    8     9 10     11       12       13   14
+0        1  2   RICH AND LUCKY (C413)     Z Purton      L Ho  120  1066  5      -  3 4 3 1  1:22.73  1.7
+1        2  7      KING DRAGON (C437)   S De Sousa   K L Man  120  1078  4    3/4  2 2 1 2  1:22.87   11
+2        3  6       INVALUABLE (D091)  C Schofield  R Gibson  120  1297  1  1-1/2  6 6 7 3  1:22.97  6.3
+3        4  8     KELMIMI WINS (C419)      A Badel   C H Yip  120  1087  3  3-1/4  5 7 5 4  1:23.24   26
+4        5  5  VICTORY FOR ALL (C342)       T H So  Y S Tsui  120  1022  2      5  4 3 4 5  1:23.51  147
+2025-09-28 13:26:47,538 - INFO - Checking: 28/12/2019
+2025-09-28 13:27:29,567 - INFO - No races found for 28/12/2019 - skipping
+2025-09-28 13:27:29,567 - INFO - Checking: 27/12/2019
+2025-09-28 13:28:11,334 - INFO - No races found for 27/12/2019 - skipping
+2025-09-28 13:28:11,335 - INFO - Checking: 26/12/2019
+2025-09-28 13:28:20,788 - INFO - Found 12 race entries
+2025-09-28 13:28:20,789 - INFO - Scraping: 26/12/2019
+2025-09-28 13:29:21,379 - INFO - Extracted data for first race: 
+2025-09-28 13:29:21,379 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=2
+2025-09-28 13:29:56,089 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=3
+2025-09-28 13:30:30,987 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=4
+2025-09-28 13:31:10,337 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=5
+2025-09-28 13:31:44,585 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=6
+2025-09-28 13:32:19,661 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=7
+2025-09-28 13:32:57,928 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=8
+2025-09-28 13:33:32,364 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/26&Racecourse=HV&RaceNo=9
+2025-09-28 13:34:07,203 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/ResultsAll.aspx?RaceDate=2019/12/26
+2025-09-28 13:34:51,507 - INFO - Saved ./races4.csv with 109 entries from 10 races
+2025-09-28 13:34:51,515 - INFO - Sample data:   0  1  2  3   4                         5              6   ...   8     9   10     11       12       13   14
+0           1  11  LIGHTNING MISSILE (A281)         C Y Ho  ...  117  1169   1      -    2 2 1  1:10.35   26
+1           2  10       SHOW MISSION (T436)  G van Niekerk  ...  117  1115  10      N    5 5 2  1:10.41   24
+2           3  12          NASHASHUK (V143)       K Teetan  ...  113  1109   2      1    4 4 3  1:10.51  6.8
+3           4   1    BLOOMING SPIRIT (C064)      J Moreira  ...  133  1105   6  1-1/4  11 10 4  1:10.55  2.3
+4           5   5            STARLOT (V367)        B Shinn  ...  132  1189   7  1-3/4    7 7 5  1:10.65   18
+
+[5 rows x 15 columns]
+2025-09-28 13:34:53,518 - INFO - Checking: 25/12/2019
+2025-09-28 13:35:36,366 - INFO - No races found for 25/12/2019 - skipping
+2025-09-28 13:35:36,367 - INFO - Checking: 24/12/2019
+2025-09-28 13:36:18,146 - INFO - No races found for 24/12/2019 - skipping
+2025-09-28 13:36:18,146 - INFO - Checking: 23/12/2019
+2025-09-28 13:37:01,360 - INFO - No races found for 23/12/2019 - skipping
+2025-09-28 13:37:01,360 - INFO - Checking: 22/12/2019
+2025-09-28 13:37:44,780 - INFO - No races found for 22/12/2019 - skipping
+2025-09-28 13:37:44,780 - INFO - Checking: 21/12/2019
+2025-09-28 13:37:48,693 - INFO - Found 10 race entries
+2025-09-28 13:37:48,693 - INFO - Scraping: 21/12/2019
+2025-09-28 13:38:49,177 - INFO - Extracted data for first race: 
+2025-09-28 13:38:49,185 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=2
+2025-09-28 13:39:23,388 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=3
+2025-09-28 13:39:57,921 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=4
+2025-09-28 13:40:32,705 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=5
+2025-09-28 13:41:07,511 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=6
+2025-09-28 13:41:47,143 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=7
+2025-09-28 13:42:26,950 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=8
+2025-09-28 13:43:01,110 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=9
+2025-09-28 13:43:37,962 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/LocalResults.aspx?RaceDate=2019/12/21&Racecourse=ST&RaceNo=10
+2025-09-28 13:44:18,023 - INFO - Scraping additional race: https://racing.hkjc.com/racing/information/English/Racing/ResultsAll.aspx?RaceDate=2019/12/21
+2025-09-28 13:45:04,078 - INFO - Saved ./races9.csv with 135 entries from 11 races
+2025-09-28 13:45:04,086 - INFO - Sample data:   0  1  2  3  4                          5          6   ...   8     9  10     11       12       13   14
+0           1  5      LIVERBIRD STAR (A405)  K C Leung  ...  125  1184  3      -  3 2 2 1  1:36.56  4.5
+1           2  7        MONEY WINNER (A055)   N Callan  ...  122  1030  1    3/4  8 8 8 2  1:36.70  7.6
+2           3  3         REGENCY GEM (C035)   Z Purton  ...  130  1158  4      1  7 6 5 3  1:36.73  2.9
+3           4  8       SOCCER MASTER (B452)  J Moreira  ...  122  1097  5  1-1/4  5 4 4 4  1:36.74  4.8
+4           5  1  WINWIN THIRTYTHREE (C110)   M F Poon  ...  131   987  7  2-1/4  9 9 6 5  1:36.93  4.7
+
+[5 rows x 15 columns]
+2025-09-28 13:45:06,089 - INFO - Checking: 20/12/2019
+2025-09-28 13:45:48,513 - INFO - No races found for 20/12/2019 - skipping
+2025-09-28 13:45:48,513 - INFO - ==================================================
+2025-09-28 13:45:48,513 - INFO - SCRAPING COMPLETE
+2025-09-28 13:45:48,513 - INFO - Total dates checked: 10
+2025-09-28 13:45:48,513 - INFO - Dates with races: 3
+2025-09-28 13:45:48,513 - INFO - Dates with no races: 7
+2025-09-28 13:45:48,513 - INFO - Total files created: 3
+2025-09-28 13:45:48,513 - INFO - ==================================================
