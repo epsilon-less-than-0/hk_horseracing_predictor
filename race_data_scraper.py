@@ -2,7 +2,12 @@
 from bs4 import BeautifulSoup
 import requests
 import string
+import shutil
+import re
+from datetime import datetime, timedelta
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
@@ -24,116 +29,122 @@ logging.basicConfig(
     ]
 )
 
-#starting webdriver
+# Starting URL
 BASE_URL = "https://racing.hkjc.com/racing/information/English/racing/LocalResults.aspx?RaceDate="
 
-# TEST DATES - Just a few dates to test with (mix of likely race days and non-race days)
-dates = ["29/12/2019", "28/12/2019", "27/12/2019", "26/12/2019", "25/12/2019", 
-         "24/12/2019", "23/12/2019", "22/12/2019", "21/12/2019", "20/12/2019"]
+# --- DYNAMIC DATE GENERATOR ---
+def get_hkjc_likely_race_dates(start_date_str, end_date_str):
+    """Generates a list of Weds, Sats, and Suns (formatted DD/MM/YYYY) newest to oldest."""
+    start_date = datetime.strptime(start_date_str, "%d/%m/%Y")
+    end_date = datetime.strptime(end_date_str, "%d/%m/%Y")
+    
+    date_list = []
+    current_date = end_date # Start from the newest date
+    
+    while current_date >= start_date:
+        # 2 = Wednesday, 5 = Saturday, 6 = Sunday
+        if current_date.weekday() in [2, 5, 6]:
+            date_list.append(current_date.strftime("%d/%m/%Y"))
+        current_date -= timedelta(days=1)
+        
+    return date_list
 
-# UNCOMMENT BELOW FOR FULL DATE RANGE LATER:
-# dates = ["29/12/2019", "26/12/2019", "21/12/2019", "18/12/2019", "15/12/2019", "11/12/2019", "08/12/2019",
-#  "04/12/2019", "01/12/2019", "27/11/2019", "23/11/2019", "20/11/2019", "17/11/2019", "09/11/2019",
-#   "06/11/2019", "03/11/2019", "30/10/2019", "27/10/2019", "23/10/2019", "20/10/2019", "16/10/2019",
-#    "12/10/2019", "09/10/2019", "01/10/2019", "25/09/2019", "21/09/2019", "15/09/2019", "11/09/2019",
-#      "01/09/2019", "14/07/2019", "10/07/2019", "07/07/2019", "03/07/2019", "01/07/2019", "26/06/2019", "23/06/2019",
-#       "16/06/2019", "05/06/2019", "29/05/2019", "22/05/2019", "15/05/2019", "11/05/2019", "08/05/2019", "05/05/2019",
-#        "01/05/2019", "28/04/2019", "22/04/2019",  "07/04/2019","03/04/2019", "31/03/2019", "24/03/2019", "23/03/2019", "20/03/2019",
-#         "17/03/2019", "13/03/2019", "10/03/2019", "06/03/2019", "02/03/2019", "27/02/2019",
-#          "24/02/2019", "17/02/2019", "13/02/2019","10/02/2019", "07/02/2019", "02/02/2019", "30/01/2019", "27/01/2019",
-#           "23/01/2019", "20/01/2019", "16/01/2019", "12/01/2019", "09/01/2019", "06/01/2019", "01/01/2019",
-#            "29/12/2018", "26/12/2018", "23/12/2018", "19/12/2018", "16/12/2018", "12/12/2018", "09/12/2018",
-#             "05/12/2018", "02/12/2018", "28/11/2018", "25/11/2018", "21/11/2018", "18/11/2018", "14/11/2018", "10/11/2018", "07/11/2018",
-#              "04/11/2018", "31/10/2018", "28/10/2018", "24/10/2018", "21/10/2018",  "18/10/2018",
-#               "13/10/2018", "10/10/2018", "01/10/2018", "26/09/2018", "22/09/2018", "12/09/2018",
-#                "09/09/2018", "05/09/2018", "02/09/2018"]
+# Generate every Wed/Sat/Sun from Sept 1, 2018 to Today (April 18, 2026)
+dates = get_hkjc_likely_race_dates("01/09/2018", "18/04/2026")
+logging.info(f"Generated {len(dates)} potential race dates to check.")
 
-driver = webdriver.Firefox()
+# --- CHROMIUM INITIALIZATION ---
+chrome_options = Options()
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--headless") # Runs silently in the background
+
+chromium_path = shutil.which("chromium-browser") or shutil.which("chromium")
+if chromium_path:
+    chrome_options.binary_location = chromium_path
+
+driver = webdriver.Chrome(options=chrome_options)
 wait = WebDriverWait(driver, 15)
-
-def check_exists_by_xpath(xpath):
-    try:
-        driver.find_element_by_xpath(xpath)
-    except NoSuchElementException:
-        return False
-    return True
 
 def page_has_races(driver):
     """Check if current page has race data"""
     try:
-        # Check for the race table with actual data rows
-        race_table = driver.find_elements_by_xpath("//div[5]/table/tbody/tr")
-        
-        # Also check if there's race information header
-        race_info = driver.find_elements_by_xpath("//div[4]/table")
-        
+        race_table = driver.find_elements(By.XPATH, "//div[5]/table/tbody/tr")
+        race_info = driver.find_elements(By.XPATH, "//div[4]/table")
         has_data = len(race_table) > 0 and len(race_info) > 0
-        
         if has_data:
-            logging.info(f"Found {len(race_table)} race entries")
-        
+            logging.info(f"Found {len(race_table)} horses in Race 1")
         return has_data
-        
     except Exception as e:
-        logging.warning(f"Error checking for race data: {e}")
         return False
 
+def extract_race_headers(driver):
+    """Extracts Race Name, Going, and Course robustly using Regex and DOM fallbacks."""
+    race_name, race_going, race_type = "", "", ""
+    try:
+        # Grab the entire text block of the header table
+        info_text = driver.find_element(By.XPATH, "//div[4]/table").text
+        
+        # Parse using Regex
+        rn_match = re.search(r'(RACE\s+\d+.*?(?=\n|Going|Course|$))', info_text, re.IGNORECASE)
+        race_name = rn_match.group(1).strip() if rn_match else ""
+        
+        going_match = re.search(r'Going\s*:\s*([^\n]+)', info_text)
+        race_going = going_match.group(1).strip() if going_match else ""
+        
+        course_match = re.search(r'Course\s*:\s*([^\n]+)', info_text)
+        race_type = course_match.group(1).strip() if course_match else ""
+        
+        # DOM Fallbacks (uses inner-text matching '.' instead of strict text())
+        if not race_name:
+            try: race_name = driver.find_element(By.XPATH, "//div[4]/table/thead/tr/td[1]").text
+            except: pass
+        if not race_going:
+            try: race_going = driver.find_element(By.XPATH, "//td[contains(., 'Going')]/following-sibling::td").text
+            except: pass
+        if not race_type:
+            try: race_type = driver.find_element(By.XPATH, "//td[contains(., 'Course')]/following-sibling::td").text
+            except: pass
+            
+    except Exception as e:
+        logging.warning(f"Header extraction failed: {e}")
+        
+    return race_name, race_going, race_type
+
 def save_progress(processed_dates, filename="progress.txt"):
-    """Save list of processed dates to file"""
     with open(filename, 'w') as f:
         for date in processed_dates:
             f.write(date + '\n')
 
 def load_progress(filename="progress.txt"):
-    """Load list of processed dates from file"""
     if not os.path.exists(filename):
         return []
-    
     with open(filename, 'r') as f:
         return [line.strip() for line in f.readlines()]
 
-"""
-Initialize variables: 
-
-Data collected per entry: 
-  place, horse_no, horse, jockey, trainer, actual_wt,
-  declare_horse_wt, draw, lbw, running_pos, finish_time, win_odds
-"""
-
-race_name_xpath = "/html/body/div/div[4]/table/thead/tr/td[1]"
-race_type_xpath = "/html/body/div/div[4]/table/tbody/tr[2]/td[1]"
-race_going_xpath = "/html/body/div/div[4]/table/tbody/tr[2]/td[3]"
-race_table_xpath = string.Template('''/html/body/div/div[5]/table/tbody/tr[$row]/td[$col]''')
-
+# Selectors
 same_day_race_link_xpaths = "//div[2]/table/tbody/tr/td/a"
 table_row_xpath = "//div[5]/table/tbody/tr"
 
-# Load previously processed dates
+# Load progress
 processed_dates = load_progress()
 logging.info(f"Found {len(processed_dates)} previously processed dates")
 
 count = 0
-race_name = ""
-race_going = ""
-race_type = ""
 successful_scrapes = 0
 skipped_dates = 0
 
-# Begin grabbing data
+# Begin Scraping
 for meet in dates:
-    # Skip if already processed
     if meet in processed_dates:
         logging.info(f"Skipping {meet} - already processed")
         continue
         
     logging.info(f"Checking: {meet}")
-    
     race_entry = []
-    internalRaceCount = 1
     count += 1
     
-    # Check if CSV already exists
-    if os.path.isfile('races' + str(count) + '.csv'):
+    if os.path.isfile(f'races{count}.csv'):
         logging.info(f"CSV file races{count}.csv already exists - skipping")
         processed_dates.append(meet)
         continue
@@ -143,7 +154,6 @@ for meet in dates:
         driver.get(BASE_URL + meet)
         driver.implicitly_wait(20)
         
-        # Check if this page has race data
         if not page_has_races(driver):
             logging.info(f"No races found for {meet} - skipping")
             skipped_dates += 1
@@ -152,106 +162,59 @@ for meet in dates:
         
         logging.info(f"Scraping: {meet}")
         
-        same_day_selel = driver.find_elements_by_xpath(same_day_race_link_xpaths)[:-1]
-        same_day_links = [x.get_attribute("href") for x in same_day_selel]  
+        # Get additional race links for the same day
+        same_day_selel = driver.find_elements(By.XPATH, same_day_race_link_xpaths)
+        same_day_links = []
+        for x in same_day_selel:
+            href = x.get_attribute("href")
+            # Strictly filter for URLs that point to a specific race number
+            if href and "RaceNo=" in href:
+                same_day_links.append(href)
         
-        # Get first race - x columns y rows + race name, going, track type
-        tempTableEl = wait.until(EC.presence_of_all_elements_located((By.XPATH, table_row_xpath)))
-        table_rows = tempTableEl
-
-        if (check_exists_by_xpath(race_name_xpath)):
-            tempEl = wait.until(EC.presence_of_element_located((By.XPATH, race_name_xpath)))
-            race_name = (tempEl.text)
-        if (check_exists_by_xpath(race_going_xpath)):
-            tempEl = wait.until(EC.presence_of_element_located((By.XPATH,race_going_xpath)))
-            race_going = (tempEl.text)
-        if (check_exists_by_xpath(race_type_xpath)):
-            tempEl = wait.until(EC.presence_of_element_located((By.XPATH,race_type_xpath)))
-            race_type = (tempEl.text)
-
-        for row in table_rows:
-            rowEntry = []
-            rowEntry.append(race_name)
-            rowEntry.append(race_going)
-            rowEntry.append(race_type)
-            cols = row.find_elements_by_tag_name('td')
-            for col in cols:
-                rowEntry.append(col.text)
-            race_entry.append(rowEntry)
+        # Scrape every race for this date
+        all_race_urls = [driver.current_url] + same_day_links
         
-        logging.info(f"Extracted data for first race: {race_name}")
-        
-        # Get other races on same meet
-        for same_day_link in same_day_links:
-            logging.info(f"Scraping additional race: {same_day_link}")
-            internalRaceCount += 1
-            driver.get(same_day_link)
-            driver.implicitly_wait(10)
+        for url in all_race_urls:
+            if url != driver.current_url:
+                driver.get(url)
+                time.sleep(1) # Respect server rate limiting
             
-            # Be respectful to the server
-            time.sleep(1)
-
-            # Scrape 2nd - n
-            if (check_exists_by_xpath(race_name_xpath)):
-                tempEl = wait.until(EC.presence_of_element_located((By.XPATH, race_name_xpath)))
-                race_name = (tempEl.text)
-            if (check_exists_by_xpath(race_going_xpath)):
-                tempEl = wait.until(EC.presence_of_element_located((By.XPATH,race_going_xpath)))
-                race_going = (tempEl.text)
-            if (check_exists_by_xpath(race_type_xpath)):
-                tempEl = wait.until(EC.presence_of_element_located((By.XPATH,race_type_xpath)))
-                race_type = (tempEl.text)
-
-            table_rows = driver.find_elements_by_xpath(table_row_xpath)
-
+            # Use the new robust extraction function
+            race_name, race_going, race_type = extract_race_headers(driver)
+            
+            # Extract table data
+            table_rows = driver.find_elements(By.XPATH, table_row_xpath)
             for row in table_rows:
-                rowEntry = []
-                rowEntry.append(race_name)
-                rowEntry.append(race_going)
-                rowEntry.append(race_type)
-                cols = row.find_elements_by_tag_name('td')
-                for col in cols:
-                    rowEntry.append(col.text)
+                rowEntry = [race_name, race_going, race_type]
+                cols = row.find_elements(By.TAG_NAME, 'td')
+                rowEntry.extend([col.text for col in cols])
                 race_entry.append(rowEntry)
-        
-        # Save file as csv
-        if race_entry:  # Only save if we have data
+            
+            logging.info(f"Extracted race: {race_name}")
+
+        # Save to CSV
+        if race_entry:
             df = pd.DataFrame(race_entry)
-            csv_filename = "./races" + str(count) + ".csv"
+            csv_filename = f"./races{count}.csv"
             df.to_csv(csv_filename, index=False)
-            logging.info(f"Saved {csv_filename} with {len(race_entry)} entries from {internalRaceCount} races")
-            logging.info(f"Sample data: {df.head()}")
+            logging.info(f"Saved {csv_filename} with {len(race_entry)} entries")
             successful_scrapes += 1
-        else:
-            logging.warning(f"No data extracted for {meet}")
         
-        # Mark as processed
         processed_dates.append(meet)
-        
-        # Save progress periodically
-        if count % 5 == 0:  # Save more frequently during testing
+        if count % 5 == 0:
             save_progress(processed_dates)
-            logging.info(f"Progress saved. Processed {len(processed_dates)} dates so far.")
         
-        # Be respectful to the server
-        time.sleep(2)
+        time.sleep(2) # Throttle between dates
         
     except Exception as e:
         logging.error(f"Error processing {meet}: {e}")
-        # Still mark as processed to avoid retrying failed dates
         processed_dates.append(meet)
         continue
 
-# Final save of progress
 save_progress(processed_dates)
-
-# Summary
 logging.info("="*50)
 logging.info("SCRAPING COMPLETE")
-logging.info(f"Total dates checked: {len(dates)}")
-logging.info(f"Dates with races: {successful_scrapes}")
-logging.info(f"Dates with no races: {skipped_dates}")
-logging.info(f"Total files created: {successful_scrapes}")
+logging.info(f"Dates checked: {len(dates)} | Successful: {successful_scrapes} | Skipped: {skipped_dates}")
 logging.info("="*50)
 
 driver.quit()

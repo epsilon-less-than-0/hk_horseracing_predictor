@@ -132,6 +132,9 @@ def main():
                 logging.warning(f"{file_path} is empty, skipping")
                 continue
             
+            # Clean the data FIRST
+            temp_df = clean_race_data(temp_df)
+
             # Add date column
             if file_num in date_mapping:
                 temp_df["date"] = date_mapping[file_num]
@@ -144,9 +147,6 @@ def main():
                 else:
                     temp_df["date"] = f"Unknown_{file_num}"
                     logging.warning(f"Could not determine date for {file_path}, using Unknown_{file_num}")
-            
-            # Clean the data
-            temp_df = clean_race_data(temp_df)
             
             # Add file reference
             temp_df['source_file'] = file_path
@@ -251,6 +251,9 @@ def main_with_custom_mapping(custom_date_mapping):
                 logging.warning(f"{file_path} is empty, skipping")
                 continue
             
+            # Clean the data FIRST
+            temp_df = clean_race_data(temp_df)
+
             # Add date column using custom mapping
             if file_num in custom_date_mapping:
                 temp_df["date"] = custom_date_mapping[file_num]
@@ -259,11 +262,9 @@ def main_with_custom_mapping(custom_date_mapping):
                 temp_df["date"] = f"Unknown_{file_num}"
                 logging.warning(f"Could not determine date for {file_path}, using Unknown_{file_num}")
             
-            # Clean the data
-            temp_df = clean_race_data(temp_df)
+            # Add file reference
             temp_df['source_file'] = file_path
             df_list.append(temp_df)
-            logging.info(f"Successfully processed {file_path} with {len(temp_df)} rows")
             
         except Exception as e:
             logging.error(f"Error processing {file_path}: {e}")
