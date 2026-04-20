@@ -5,15 +5,15 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-def run_divergence_hunter():
-    logging.info("=== PHASE 7: THE DIVERGENCE HUNTER (V4.0) ===")
+def run_v3_divergence_hunter():
+    logging.info("=== PHASE 8.3: THE DIVERGENCE HUNTER (V3 PACE TOPOLOGY) ===")
     
-    # 1. Load the V2.0 Alpha Model
+    # 1. Load the V3 Pace-Adjusted Model
     try:
         ranker = xgb.XGBRanker()
-        ranker.load_model('v2_hkjc_ranker.json')
+        ranker.load_model('v3_hkjc_ranker.json')
     except Exception as e:
-        logging.error("Could not load V2.0 model.")
+        logging.error("Could not load V3 model.")
         return
 
     # 2. Extract Data 
@@ -22,26 +22,34 @@ def run_divergence_hunter():
     df_odds = pd.read_sql("SELECT date, race_id, horse_id, public_odds as win_odds FROM race_results", conn)
     conn.close()
 
+    # Mathematically normalize dates and merge
     df_features['date'] = pd.to_datetime(df_features['date']).dt.normalize()
     df_odds['date'] = pd.to_datetime(df_odds['date']).dt.normalize()
     df = pd.merge(df_features, df_odds, on=['date', 'race_id', 'horse_id'], how='inner')
 
+    # Strip ghost rows generated from previous CSV scraping overlaps
+    df = df.drop_duplicates(subset=['date', 'race_id', 'horse_id'])
+
     df['plc_num'] = pd.to_numeric(df['plc'], errors='coerce')
     df['win_odds'] = pd.to_numeric(df['win_odds'], errors='coerce')
     
-    # Filter for Unseen Holdout Data
-    test_df = df[(df['date'].dt.year >= 2025)].dropna(subset=['plc_num', 'win_odds']).copy()
-    test_df = test_df.sort_values(by=['date', 'race_id'])
-    
+    # NEW: V3 Feature Set
     features = [
         'pre_race_elo', 'days_since_last_run', 'weight_delta', 
         'distance_delta', 'career_wins', 'is_turf', 
-        'draw', 'jockey_win_pct', 'trainer_win_pct'
+        'draw', 'jockey_win_pct', 'trainer_win_pct',
+        'shifted_rolling_ESI', 'shifted_rolling_CSI', 
+        'race_ESI_pressure', 'pace_advantage'
     ]
+    
+    # Filter for Unseen Holdout Data (2025+) and drop NaNs (require pace history)
+    test_df = df[(df['date'].dt.year >= 2025)].dropna(subset=['plc_num', 'win_odds'] + features).copy()
+    test_df = test_df.sort_values(by=['date', 'race_id'])
+    
     X_test = test_df[features].astype(float)
     
     # 3. Generate AI Rankings AND Public Rankings
-    logging.info(f"Scanning {len(test_df)} runners for Market Divergence...")
+    logging.info(f"Scanning {len(test_df)} pace-adjusted runners for Market Divergence...")
     if len(test_df) == 0: return
         
     # AI Rank
@@ -54,18 +62,14 @@ def run_divergence_hunter():
     # 4. Isolate Model's #1 Picks
     top_picks = test_df[test_df['model_rank'] == 1.0].copy()
     
-    # Group them by where the PUBLIC ranked them
-    # e.g., Public Rank 1 = "Consensus Favorite"
-    # e.g., Public Rank 4 = "Ignored by the Crowd"
-    
-    logging.info("\n=== DIVERGENCE ANALYSIS (AI #1 PICKS) ===")
-    logging.info(f"{'Public Rank':<15} | {'Bets':<5} | {'Wins':<5} | {'Win %':<6} | {'ROI':<8}")
-    logging.info("-" * 55)
+    logging.info("\n=== V3 DIVERGENCE ANALYSIS (AI #1 PICKS) ===")
+    logging.info(f"{'Public Rank':<16} | {'Bets':<5} | {'Wins':<5} | {'Win %':<6} | {'ROI':<8}")
+    logging.info("-" * 56)
     
     total_bets = 0
     total_returned = 0.0
     
-    # We will look at the top 6 public ranks to find the sweet spot
+    # We look at the top 6 public ranks
     for pub_rank in range(1, 7):
         tier_data = top_picks[top_picks['public_rank'] == pub_rank]
         bets = len(tier_data)
@@ -81,16 +85,16 @@ def run_divergence_hunter():
         total_bets += bets
         total_returned += returned
         
-        # Labeling for clarity
+        # Labeling
         label = f"Rank {pub_rank}"
         if pub_rank == 1: label += " (Agree)"
         elif pub_rank >= 3: label += " (Diverge)"
         
-        logging.info(f"{label:<15} | {bets:<5} | {wins:<5} | {win_pct:>5.1f}% | {roi:>6.2f}%")
+        logging.info(f"{label:<16} | {bets:<5} | {wins:<5} | {win_pct:>5.1f}% | {roi:>6.2f}%")
         
     overall_roi = ((total_returned - (total_bets * 100.0)) / (total_bets * 100.0)) * 100
-    logging.info("-" * 55)
-    logging.info(f"{'OVERALL':<15} | {total_bets:<5} | {int(top_picks[top_picks['public_rank'] <= 6]['plc_num'].eq(1).sum()):<5} | {overall_roi:>6.2f}%")
+    logging.info("-" * 56)
+    logging.info(f"{'OVERALL':<16} | {total_bets:<5} | {int(top_picks[top_picks['public_rank'] <= 6]['plc_num'].eq(1).sum()):<5} | {overall_roi:>6.2f}%")
 
 if __name__ == "__main__":
-    run_divergence_hunter()
+    run_v3_divergence_hunter()
