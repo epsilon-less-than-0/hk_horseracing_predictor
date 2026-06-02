@@ -467,3 +467,747 @@ commitments that MUST be preserved:
 --------------------------------------------------------------------------------
 END PHASE 55 ENTRY
 ================================================================================
+
+--------------------------------------------------------------------------------
+PHASE 55 ADDENDUM — v1 DATABASE LOSS
+--------------------------------------------------------------------------------
+Date: [25 May 2026]
+During the archival step preceding the v32 scrape, data/hk_racing.db (v1) was
+overwritten before being moved to archive/. The exact database state that
+produced the v31 +40.17% ROI is no longer recoverable.
+
+Impact assessment:
+  - LOW. Invariant #5 already declared v31's ROI methodologically invalid
+    (synthetic payouts, contaminated window). No benchmark depends on
+    reconstructing it.
+  - The v1 raw CSVs ARE preserved in archive/v1_scrape_2018_2026/, so
+    approximate reconstruction is possible if ever required, modulo
+    library version drift.
+
+No action required. v32 proceeds as planned.
+--------------------------------------------------------------------------------
+================================================================================
+=== PHASE 55.1: SCRAPE EXECUTION + DATA INTEGRITY AUDIT — COMPLETE ===
+================================================================================
+Date Completed: [FILL IN WHEN APPENDED]
+Status: COMPLETE — Data ingestion (Phase 55.2) now unblocked.
+
+--------------------------------------------------------------------------------
+SCRAPE EXECUTION SUMMARY
+--------------------------------------------------------------------------------
+Tool used:    scrapers/race_data_scraper_v2_1.py
+Date range:   01/09/2011 → 25/05/2026 (15 HKJC seasons)
+Runtime:      ~30.5 hours (May 25 17:57 → May 27 00:31)
+Total dates:  2,306 candidate Wed/Sat/Sun dates checked
+Meetings:     1,205 successful, 1,099 skipped (no racing on that date)
+
+Output structure (data/raw_csvs/):
+  - races{N}.csv     × 1,205  (horse-level results, no header row,
+                                positional columns)
+  - dividends{N}.csv × 1,205  (one row per pool per race, headed)
+                              Note: meeting 1124 file is empty (legitimate —
+                              Conghua training meet has no betting pools)
+  - metadata{N}.csv  × 1,205  (one row per race, headed)
+
+Distribution by calendar year (healthy, ~80/year except partial 2011 and 2026):
+  2011: 28   2012: 80   2013: 76   2014: 77   2015: 80
+  2016: 77   2017: 85   2018: 83   2019: 81   2020: 87
+  2021: 81   2022: 84   2023: 83   2024: 81   2025: 83
+  2026: 39 (Jan-May, in-progress season — this is the SEALED HOLDOUT)
+
+--------------------------------------------------------------------------------
+SCRAPER PATCHING NOTES (lessons learned)
+--------------------------------------------------------------------------------
+Two bugs were caught and patched BEFORE the full scrape ran:
+
+  1. POOL NAME COLLISION (v2.0 → v2.1)
+     Initial test scrape revealed that "QUINELLA PLACE" rows were being
+     mislabeled as "PLACE" due to substring matching in TARGET_POOLS
+     iteration. Fix: reorder TARGET_POOLS longest-first, added match_pool()
+     helper that returns first hit. Verified on second test scrape: all 8
+     pools now correctly distinguished.
+
+  2. ROBUST JOIN KEYS (v2.1 addition)
+     Added race_no column to dividends and metadata CSVs, extracted from
+     URL RaceNo query parameter. Provides integer join key independent of
+     race_name extraction success — critical because race_name occasionally
+     fails to extract on edge-case pages (see below).
+
+  Patched scraper: scrapers/race_data_scraper_v2_1.py (committed)
+
+--------------------------------------------------------------------------------
+POST-SCRAPE AUDIT — THREE CATEGORIES OF "FAILURES" INVESTIGATED
+--------------------------------------------------------------------------------
+The scraper's failed_extractions.txt logged 253 header-extraction failures.
+Breakdown:
+
+CATEGORY 1 — Overseas simulcast pages (242 entries) — IGNORE
+  URL pattern: /en-us/overseas/results?Racecourse=S{1-5}&RaceNo=...
+  HKJC sells betting on overseas races (Japan, Australia, UK, etc.) and
+  these pages appear in the same-day-races navigation strip. They have
+  a different DOM than HK races and are NOT part of the HKJC bettable
+  population. The scraper correctly identified them as failures.
+  Action: Filter at ingest. Do not include in v32 dataset.
+
+CATEGORY 2 — Race name cosmetic failures (3 entries) — NO ACTION
+  Dates: 15/11/2025 R8, 22/02/2023 R8, 24/12/2022 R5, 26/10/2016 R4
+  These races extracted ALL data successfully — only the race_name string
+  field was empty due to a DOM rendering hiccup. race_no, horses, dividends,
+  metadata all present. v32 doesn't use race_name as a key (uses race_id
+  built from date + race_no), so this is cosmetic.
+
+CATEGORY 3 — Abandoned races + Conghua training meetings (6 entries)
+  INVESTIGATED VIA BROWSER INSPECTION. These are the most important
+  finding and resolve to two structurally distinct cases:
+
+  Case 3a: CONGHUA TRAINING MEETING (1 meeting)
+    Date: 23/03/2019, meeting #1124
+    HKJC's Conghua facility in mainland China hosts non-bettable training
+    races (fitness conditioning, seasonal trials). These meetings have:
+      - Race results (horse list, finish positions) — captured
+      - NO dividend table on the page — none to capture
+      - HK$2M prize for "HKJC Trophy" (yes, named race, still no betting)
+    Action: Mark as is_bettable=0 in race_metadata. Exclude from v32
+    training data and from v32 prediction/execution.
+
+  Case 3b: ABANDONED RACES (5 races across 2 meetings)
+    Dates: 13/11/2024 R7/R8/R9, 21/09/2025 R9/R10
+    These races were abandoned mid-event (weather, injury, stewards'
+    inquiry, etc.). HKJC's results page shows:
+      - Header: "This race is declared abandoned. Under the Horse Race
+        Betting Rules, Single Race Pools for this race, if any, will be
+        refunded."
+      - No race result table (the race didn't complete)
+      - Dividend table shows "REFUND" string in all pool rows
+    The XPath '//div[4]/table' that locates the race info on normal pages
+    finds nothing on abandoned pages — that's the source of all 5 failed
+    header extractions plus the missing dividend rows.
+    Action: At ingest, parse "REFUND" strings → set is_refund=1, dividend
+    column = NULL. Exclude from v32 training and execution (no real payout
+    signal exists).
+
+TARGETED RE-SCRAPE (scrapers/targeted_rescrape.py)
+  A re-scrape was attempted on the 3 problem meetings using a "delete-and-
+  replace" strategy. Outcome:
+    - 23/03/2019: Re-fetched same 5-race Conghua data, no dividends to
+      capture. State unchanged.
+    - 13/11/2024: Races 1-7 captured cleanly (some new R7 data improved
+      over original cosmetic-only failure). Races 8-9 still failed — but
+      that is the correct behavior because those races are abandoned.
+    - 21/09/2025: Races 1-8 captured cleanly. Races 9-10 still failed —
+      correct, also abandoned.
+  Initially appeared as a "failed re-scrape" but is actually CORRECT
+  BEHAVIOR. The data we have is complete given what HKJC publishes.
+
+--------------------------------------------------------------------------------
+FINAL DATA INTEGRITY ASSESSMENT
+--------------------------------------------------------------------------------
+Across ~12,000 races over 15 seasons:
+  - 5 Conghua training races (not bettable)
+  - 5 abandoned races (refunded, no payout signal)
+  = 10 non-bettable races (~0.083% of dataset)
+
+Everything HKJC published as a real, bettable race result with associated
+dividend data IS in the scraped CSVs. The dataset is structurally complete.
+No further scraping required.
+
+--------------------------------------------------------------------------------
+KEY PROTOCOL DECISIONS RECORDED HERE FOR FUTURE SESSIONS
+--------------------------------------------------------------------------------
+These decisions were made during Phase 55.1 and MUST be honored by v32:
+
+  D1. Overseas simulcast races (URL contains '/overseas/') are FILTERED at
+      ingest. They are not part of the HKJC bettable population for v32.
+
+  D2. Conghua training meetings (course = 'CH', or url contains 'Racecourse=CH'
+      in the Trackwork context — but local results CH = Conghua training) are
+      marked is_bettable=0 in race_metadata and EXCLUDED from v32 training
+      and execution. Note: HKJC sometimes runs real-betting events at
+      Conghua (rare). Distinguish by presence/absence of dividend rows:
+      no dividends → training meet → exclude.
+
+  D3. Abandoned races (dividends contain "REFUND" string) are marked
+      is_refund=1 in exotic_dividends with dividend=NULL. They are
+      EXCLUDED from v32 training and execution.
+
+  D4. race_name is a cosmetic field. Never use as a join key. v32 uses
+      race_id = "{YYYY-MM-DD}_R{race_no}" as canonical key throughout.
+
+  D5. horse_id is parsed from "NAME (CODE)" pattern in raw data, where
+      CODE is the 4-character HKJC permanent identifier. CODE is stable
+      across name changes (horses get renamed when sold). NEVER use
+      horse_name as a join key.
+
+================================================================================
+=== PHASE 55.2: DATABASE INGEST + SCHEMA DESIGN — KICKOFF ===
+================================================================================
+Status: SPECIFIED — implementation pending.
+
+--------------------------------------------------------------------------------
+DATABASE LOCATION
+--------------------------------------------------------------------------------
+Path: data/hk_racing.db (SQLite)
+Build: Drop-and-recreate on every ingest run (idempotent, no migration logic).
+
+--------------------------------------------------------------------------------
+SCHEMA — THREE PRIMARY TABLES
+--------------------------------------------------------------------------------
+TABLE 1: race_results — horse-level results, one row per (race, horse)
+  Primary key: (race_id, horse_id)
+  Columns:
+    date, date_iso, race_no, race_id,
+    race_name, going, course, distance,
+    finish_position, horse_no, horse_id, horse_name,
+    jockey, trainer, act_wt, horse_wt, draw,
+    lbw, running_pos, finish_time, win_odds
+  Indexes:
+    idx_results_date  (date_iso)
+    idx_results_horse (horse_id, date_iso)
+    idx_results_race  (race_id)
+    idx_results_jock  (jockey, date_iso)
+    idx_results_train (trainer, date_iso)
+
+TABLE 2: exotic_dividends — pool payouts, one row per (race, pool, combo)
+  Primary key: (race_id, pool, combo)
+  Columns:
+    date, date_iso, race_no, race_id,
+    pool, combo, dividend, is_refund
+  Indexes:
+    idx_div_race (race_id)
+    idx_div_pool (pool, date_iso)
+    idx_div_date (date_iso)
+  Refund handling:
+    "REFUND" string in CSV → is_refund=1, dividend=NULL
+
+TABLE 3: race_metadata — race-level context, one row per race
+  Primary key: race_id
+  Columns:
+    date, date_iso, race_no, race_id,
+    race_name, going, course, distance, race_class, prize,
+    venue, is_bettable, url
+  Indexes:
+    idx_meta_date  (date_iso)
+    idx_meta_venue (venue)
+  Conghua handling:
+    venue=CH AND zero dividends → is_bettable=0
+
+--------------------------------------------------------------------------------
+SCHEMA DESIGN RATIONALE
+--------------------------------------------------------------------------------
+  - date_iso (YYYY-MM-DD) alongside date (DD/MM/YYYY) — SQLite cannot sort
+    DD/MM/YYYY correctly. ISO format enables fast range queries for
+    walk-forward train windows: WHERE date_iso BETWEEN ...
+
+  - race_id as canonical key — format "2024-11-13_R8". Single column joins
+    all three tables. Replaces brittle (date, race_name) joins.
+
+  - horse_id parsed from "NAME (CODE)" — CODE is HKJC's permanent ID,
+    stable across name changes. Names alone are unreliable.
+
+  - Compound indexes (jockey, date_iso) and (trainer, date_iso) —
+    v32 will compute rolling jockey/trainer win rates with date-bounded
+    queries. These indexes turn full-scan O(N) into O(log N).
+
+  - Drop-and-recreate every ingest — no migration complexity, fast rebuild
+    (~minutes), guarantees deterministic state. The raw CSVs are the
+    source of truth.
+
+--------------------------------------------------------------------------------
+INGEST PIPELINE — THREE PHASES
+--------------------------------------------------------------------------------
+PHASE 1: Load CSVs
+  For each of 1,205 meetings:
+    - races{N}.csv: positional columns (no header row in v2.1 output)
+    - dividends{N}.csv: headed, may be empty (Conghua meetings)
+    - metadata{N}.csv: headed
+  Concatenate into three master DataFrames.
+
+PHASE 2: Clean and enrich
+  - Parse horse_id from "NAME (CODE)" regex
+  - Convert DD/MM/YYYY → YYYY-MM-DD
+  - Construct race_id = "{date_iso}_R{race_no}"
+  - Detect "REFUND" strings in dividends → is_refund=1, dividend=NULL
+  - Parse venue from URL Racecourse= parameter (HV/ST/CH)
+  - Set is_bettable=0 where venue=CH AND meeting has zero dividends
+  - Coerce numeric fields (handle missing/scratched/DNF)
+  - Apply OPTION A for race_results: only insert rows where finish_position
+    is populated. Abandoned races appear in metadata + dividends (with
+    is_refund=1) but contribute zero rows to race_results. v32 queries
+    race_results and never sees abandoned races.
+
+PHASE 3: Write to SQLite
+  - Drop existing tables
+  - CREATE TABLE statements
+  - Bulk INSERT via pandas to_sql(method='multi')
+  - CREATE INDEX statements after insert
+  - Run sanity-check queries:
+      * Total race count by season (expect ~750-900/season)
+      * Dividend coverage by pool by season
+      * Orphan detection (race_results rows without matching metadata)
+      * Refund/Conghua counts (expect ~10 total)
+  - Print summary report.
+
+--------------------------------------------------------------------------------
+INVARIANTS FOR FUTURE SESSIONS (READ THIS IF CHAT HAS DRIFTED)
+--------------------------------------------------------------------------------
+Carry-forward from Phase 55 (still in force):
+  - 2025/26 IS SEALED. Do not run v32 against 2025/26 until v32 is frozen.
+  - REAL DIVIDENDS ONLY. Harville-synthesized payouts are forbidden in v32.
+  - WALK-FORWARD ROLLING TRAIN. Stateful features rebuilt per train window.
+  - CORRECT SETTLEMENT MATH. base * winning_combo_odds, not block average.
+  - The v31 +40.17% ROI is NOT a valid reference point. Do not benchmark
+    against it.
+
+NEW in Phase 55.1/55.2:
+  - The v32 dataset excludes overseas simulcasts, Conghua training meets,
+    and abandoned races. These exclusions are NOT optional — they are
+    necessary for the dataset to represent the HKJC bettable population.
+  - race_id is the canonical join key. Format: "{YYYY-MM-DD}_R{race_no}".
+  - horse_id is parsed from "(CODE)" in horse name strings. Never join
+    on horse_name.
+  - The database is rebuilt from CSVs on every ingest run. The CSVs in
+    data/raw_csvs/ are the source of truth. If they are lost, the only
+    recovery is re-scraping.
+
+--------------------------------------------------------------------------------
+NEXT STEPS
+--------------------------------------------------------------------------------
+Phase 55.2 implementation: data_pipeline/ingest_v32.py (pending)
+Phase 55.3: Walk-forward stateful feature rebuild design
+Phase 55.4: v32 backtest engine implementation
+Phase 55.5: Tier 2 development iteration (2016/17-2024/25)
+Phase 55.6: Freeze v32, commit with git tag
+Phase 55.7: SEAL BREAK — run v32 on 2025/26 exactly once
+
+================================================================================
+END PHASE 55.1 + 55.2 KICKOFF LOG ENTRY
+================================================================================
+
+================================================================================
+=== PHASE 55.2: DATABASE INGEST — COMPLETE ===
+================================================================================
+Date Completed: [30 May 2026]
+Status: COMPLETE (initial build) — superseded by v3.0 re-scrape (see Phase 55.2b)
+
+--------------------------------------------------------------------------------
+INGEST EXECUTION SUMMARY
+--------------------------------------------------------------------------------
+Tool used:    data_pipeline/ingest_v32.py
+Runtime:      40.6 seconds
+Database:     data/hk_racing.db (drop-and-recreated)
+
+Table populations (v2.1 scrape data):
+  race_results:     137,768 rows
+  exotic_dividends:  96,298 rows
+  race_metadata:     11,303 rows
+
+Date range:     2011-09-11 → 2026-05-24
+Bettable races: 11,292 (is_bettable=1)
+Non-bettable:       11 (is_bettable=0 — Conghua + abandoned, as expected)
+
+Race counts per HKJC season (Sep-Aug) — stable ~700-810/season:
+  2011/12: 740   2012/13: 700   2013/14: 716   2014/15: 746
+  2015/16: 705   2016/17: 751   2017/18: 778   2018/19: 752
+  2019/20: 798   2020/21: 785   2021/22: 787   2022/23: 798
+  2023/24: 755   2024/25: 807   2025/26: 674 (partial, SEALED)
+
+--------------------------------------------------------------------------------
+KEY VALIDATION RESULTS
+--------------------------------------------------------------------------------
+  Backfill integrity (race_results vs race_metadata): 0 failures
+  Orphans (race_results without metadata):           0
+  Dividend-less race_results races:                  5 (all Conghua, expected)
+  Refund rows in exotic_dividends:                   0
+
+--------------------------------------------------------------------------------
+LIMITATIONS DISCOVERED (CRITICAL — drove v3.0 re-scrape decision)
+--------------------------------------------------------------------------------
+
+L1 — PLACE and QUINELLA PLACE pools captured only 33% of dividend rows.
+  Root cause: HKJC dividend tables use HTML rowspan attribute for multi-row
+  pools. PLACE shows 3 dividend rows per race (one per placing horse), but
+  only the first <tr> contains a <td>PLACE</td> cell — subsequent rows have
+  rowspan="3" on the first cell, meaning continuation rows have NO pool
+  cell at all (they jump straight to horse_no, dividend).
+
+  The v2.1 scraper's match_pool() returned None on empty first cells,
+  silently skipping continuation rows. Same root cause affects QUINELLA
+  PLACE (3 winning pair combinations from top-3 finishers).
+
+  Quantitative evidence:
+    Pool             Actual    Expected
+    WIN              14,007    ~11,300 (some multi-winner pools)
+    PLACE            11,289    ~33,800 (3 per race) — 33% coverage
+    QUINELLA         11,289    ~11,300
+    QUINELLA PLACE   11,215    ~33,800 (3 per race) — 33% coverage
+    TIERCE           11,289    ~11,300
+    TRIO             16,969    ~11,300 (some dead-heats)
+    FIRST 4          11,270    ~11,300
+    QUARTET           8,970    not offered on all races (correct)
+
+L2 — Distance NULL for 219 race_metadata rows (1.9%).
+  All 219 are within the non-bettable population (overseas simulcasts,
+  Conghua, abandoned). Zero impact on the bettable dataset (verified).
+  Distance regex tightened in v3.0 to handle "1,200M", "1200m", etc.
+
+L3 — REFUND row information loss.
+  v2.1 dividend-value regex (\d{1,3}...) didn't match "REFUND" strings,
+  so refund cells were silently dropped at scrape time. Cannot distinguish
+  "abandoned race" from "scrape failure" at the database level. Fixed in
+  v3.0 — REFUND now preserved with dividend=NULL, is_refund=1 flag.
+
+--------------------------------------------------------------------------------
+DECISION: v3.0 RE-SCRAPE AUTHORIZED
+--------------------------------------------------------------------------------
+The L1 limitation would propagate into every future pool-expansion conversation
+(v33+ pool selection studies require complete PLACE/QP data). Carrying forward
+a known systematic gap creates compounding research debt. Re-scraping is bounded
+(~20 hours, one overnight) while the cost of working around L1 is unbounded.
+
+User authorization: "let's re-scrape, i got other stuff to work on in the next
+few days anyway." All three limitations (L1, L2, L3) fixed in single v3.0
+scraper update.
+
+================================================================================
+=== PHASE 55.2b: v3.0 RE-SCRAPE + RE-INGEST ===
+================================================================================
+Date Started: [30 May 2026]
+Status: IN PROGRESS — test scrape running.
+
+--------------------------------------------------------------------------------
+SCRAPER v3.0 CHANGES
+--------------------------------------------------------------------------------
+Tool: scrapers/race_data_scraper_v3.py
+
+L1 FIX: Multi-row pool capture via last_seen_pool state machine.
+  extract_dividends() now tracks the most recently seen pool name across
+  <tr> elements. Continuation rows with empty cells[0] inherit the pool
+  from the previous row.
+
+  Pattern:
+      last_seen_pool = None
+      for tr in rows:
+          candidate = match_pool(cells[0].text)
+          if candidate is not None:
+              last_seen_pool = candidate
+          if last_seen_pool is None: continue
+          # use last_seen_pool, not just candidate
+
+L2 FIX: Distance regex priority ladder.
+  Tries three patterns in order: "1,200M" → "1200M" → "1200m".
+  Handles every distance format HKJC has used in 15 years of pages.
+
+L3 FIX: REFUND preservation.
+  Explicit detection of "REFUND" string in dividend cells. Sets
+  dividend=None, is_refund=1 in CSV output. Ingest pipeline already
+  handles is_refund column correctly (no changes needed).
+
+IMPROVEMENTS:
+  - Overseas /overseas/ URLs filtered at link-walking stage (saves ~25
+    minutes of scrape time, eliminates ~242 entries from
+    failed_extractions.txt).
+  - Abandoned-race detection (page contains "declared abandoned" text)
+    distinguishes legitimate abandonments from header extraction failures.
+  - Path resolution made cwd-independent (relative to script location).
+
+--------------------------------------------------------------------------------
+ARCHIVED v2.1 ARTIFACTS
+--------------------------------------------------------------------------------
+Location: archive/v2_1_scrape_2011_2026/
+Contents:
+  - All v2.1 CSVs (races/dividends/metadata × 1,205 meetings)
+  - v2.1 progress.txt, failed_extractions.txt, scraping_log.txt
+  - hk_racing_v21.db (the v2.1-built database)
+  - ingest_log.txt
+  - targeted_rescrape_log.txt
+
+These are preserved for forensic comparison against v3.0 outputs and as
+rollback if any v3.0 surprise emerges.
+
+--------------------------------------------------------------------------------
+v3.0 RE-SCRAPE PROTOCOL
+--------------------------------------------------------------------------------
+1. Test scrape on recent ~3 weeks of data to verify L1 fix works
+   (PLACE/QUINELLA PLACE should show ~3 rows per race, not 1).
+2. If verified: clear test outputs, run full 15-season scrape (~20 hours).
+3. Re-run data_pipeline/ingest_v32.py against new CSVs.
+4. Post-ingest sanity check (NEW PERMANENT CHECK):
+   - PLACE rows per bettable race: expect mean ≈ 3.0
+   - QUINELLA PLACE rows per bettable race: expect mean ≈ 3.0
+   - is_refund=1 row count: expect ~10 (the abandoned races)
+
+================================================================================
+=== FUTURE DATA SOURCES (V32+) — LOGGED FOR LATER EXPLORATION ===
+================================================================================
+Date: [30 May 2026]
+
+These data sources exist on the HKJC results pages but are not currently
+scraped. They represent significant unexplored alpha angles for future
+versions. NOT in scope for v32 but worth committing to the log so they
+don't get lost.
+
+--------------------------------------------------------------------------------
+FUTURE-1: Racing Incident Reports
+--------------------------------------------------------------------------------
+Source: HKJC results page, "Racing Incident Report" section below dividend table.
+Content: Stewards' narrative of what went wrong during the race — traffic
+         trouble, interference, veterinary issues, equipment problems.
+Alpha angle: Forgive horses that finished poorly due to bad luck (checked at
+         800m, blocked clear running, lost iron, etc.). Currently the model
+         mathematically punishes these horses as if they ran their natural
+         race. A "trouble-adjusted Elo" would extract genuine ability from
+         unlucky losses.
+Prior attempt: Phase 24 tried regex/NLP parsing and failed — text too
+         unstructured, signal-to-noise too low.
+Re-attempt angle: Modern structured-extraction LLM approach (parse incident
+         narratives into a typed schema: {horse_id, incident_type, severity,
+         phase_of_race}) could succeed where regex failed.
+
+--------------------------------------------------------------------------------
+FUTURE-2: Comments on Running
+--------------------------------------------------------------------------------
+Source: Per-horse comments column in race result table (when present).
+Content: Brief observations on each horse's race behavior ("led until weakening",
+         "raced wide", "responded to challenge").
+Alpha angle: Sparse but rich forward-looking signals. "Will appreciate further"
+         often precedes a distance change. "Showed signs of greenness" flags
+         immature horses likely to improve. These are professional handicapper
+         observations that go beyond raw numbers.
+
+--------------------------------------------------------------------------------
+FUTURE-3: Finishing Photos
+--------------------------------------------------------------------------------
+Source: HKJC publishes finish-line photos for each race.
+Content: Photographic record of the final stride.
+Alpha angle: Computer vision feature extraction —
+   - Stride length and frequency at finish
+   - Head carriage (effort remaining vs. fully extended)
+   - Apparent fatigue level
+   - Distance between horses at the wire
+This is highly orthogonal to public handicapping (which uses only numerical
+data). A horse winning easily by 1L is a different proposition than a horse
+winning all-out by 1L — the photo captures that, the number doesn't.
+Difficulty: High. Requires CV pipeline, training data labeling, robust
+extraction across variable photo conditions.
+
+--------------------------------------------------------------------------------
+FUTURE-4: Sectional Times (Per-Furlong / Per-200m)
+--------------------------------------------------------------------------------
+Source: HKJC publishes per-sector times on race result pages.
+Content: Time taken for each 200m segment of the race.
+Alpha angle: Already partially captured via running_pos in v32, but the raw
+         sectional times themselves are a richer signal. Can compute
+         "true closing speed" rather than just positional gain.
+Note: Currently scraped as part of finish_time but not parsed out.
+
+================================================================================
+=== INVARIANTS — UPDATED FOR PHASE 55.2b ===
+================================================================================
+All prior invariants from Phase 55, 55.1, 55.2 carry forward unchanged.
+
+Updates from Phase 55.2b:
+  - The CURRENT database (data/hk_racing.db) was built from v2.1 scrape and
+    is SUPERSEDED. It contains the L1 limitation. Do not use for any v32
+    development. The v3.0 re-scrape will replace it.
+  - After v3.0 re-scrape completes, re-run data_pipeline/ingest_v32.py.
+    The ingest script itself is unchanged (the schema was forward-compatible
+    with is_refund and multi-row pools — only the input CSVs change).
+  - Every v32 sanity check from this point forward MUST include the
+    ratio-based pool coverage check (PLACE/QP rows per race ≈ 3.0).
+    Absolute counts are insufficient — they hide systematic gaps.
+
+================================================================================
+=== NEXT STEPS ===
+================================================================================
+Phase 55.2b (current): Test scrape → full v3.0 re-scrape → re-ingest
+Phase 55.3 (next):     Walk-forward stateful feature rebuild design
+                       Three candidate approaches to evaluate:
+                       (i)   Rebuild from absolute start every season
+                       (ii)  Rebuild from window start with defaults
+                       (iii) Hybrid: rebuild from window-start minus K seasons
+Phase 55.4: v32 backtest engine implementation
+Phase 55.5: Tier 2 development iteration (2016/17-2024/25, 9 seasons)
+Phase 55.6: Freeze v32, commit with git tag
+Phase 55.7: SEAL BREAK — run v32 on 2025/26 exactly once
+
+================================================================================
+END PHASE 55.2 + 55.2b LOG ENTRY
+================================================================================
+================================================================================
+=== PHASE 55.2b: v3.x SCRAPER ITERATION + DATASET COMPLETION ===
+================================================================================
+Date Completed: [02 June 2026]
+Status: COMPLETE — Database ready for Phase 55.3 walk-forward feature design.
+
+--------------------------------------------------------------------------------
+SUMMARY
+--------------------------------------------------------------------------------
+The v2.1 ingest revealed Limitation L1 (PLACE and QUINELLA PLACE only
+33% covered due to HTML rowspan misparsing). A full re-scrape was
+authorized to fix L1 + L2 + L3 in one pass. Three scraper iterations
+plus a network-outage recovery were required to reach final state.
+
+Final dataset state (data/hk_racing.db):
+  race_results:     137,982 rows
+  exotic_dividends: 145,606 rows  (vs 96,298 in v2.1 — L1 fixed)
+  race_metadata:    11,322 rows
+  Bettable races:   11,315
+  Date range:       2011-09-11 → 2026-05-27
+  Seasons:          15 (2011/12 → 2025/26 partial)
+
+Pool coverage (rows per bettable race, real dividends):
+  WIN:            1.55   PLACE:          3.00   ← L1 FIXED
+  QUINELLA:       1.00   QUINELLA PLACE: 2.99   ← L1 FIXED
+  TIERCE:         1.01   TRIO:           1.51
+  FIRST 4:        1.00   QUARTET:        0.81 (not always offered)
+
+--------------------------------------------------------------------------------
+SCRAPER ITERATION HISTORY
+--------------------------------------------------------------------------------
+
+v3.0 — Initial attempt at L1/L2/L3 fixes
+  Test scrape revealed v3.0 was TOO GREEDY: the last_seen_pool state
+  machine had no boundary detection. It absorbed FORECAST rows into
+  QUINELLA PLACE (4.0 rows/race instead of 3.0) and trailing multi-race
+  pool rows into QUARTET (3.2 rows/race instead of 1.0).
+
+v3.1 — State-machine boundaries added
+  Designed but not deployed. Replaced by v3.2 before any scrape ran.
+
+v3.2 — Boundaries + incident capture (FINAL)
+  Two-cell vs three-cell row detection added (the actual HKJC rowspan
+  pattern: header rows have 3 cells [pool, combo, dividend], continuation
+  rows have 2 cells [combo, dividend] with pool consumed by rowspan).
+  
+  Non-target pool detection added: when a 3-cell row contains a pool
+  we don't target (FORECAST, DOUBLE, etc.), last_seen_pool is reset to
+  None to prevent continuation rows from inheriting incorrectly.
+  
+  Bonus addition: Racing Incident Report capture (FUTURE-1 data).
+  Available for races from 04 October 2023 onward (HKJC didn't publish
+  this table before then).
+
+  v3.2 test verification (pre-full-scrape):
+    PLACE:           3.00 rows/race ✅
+    QUINELLA PLACE:  3.00 rows/race ✅
+    QUARTET:         1.00 rows/race ✅
+    All combo values populated ✅
+    Incident extraction working ✅
+
+--------------------------------------------------------------------------------
+THE NETWORK OUTAGE — RECOVERY SAGA
+--------------------------------------------------------------------------------
+Full v3.2 scrape was launched 30 May 2026 ~21:00.
+
+At approximately 06:40 on 31 May 2026, the local internet connection
+dropped during the scrape. Symptom in the failure log: 409 occurrences
+of "net::ERR_NAME_NOT_RESOLVED" (DNS lookup failures). The outage
+lasted ~5.5 hours.
+
+Because the v3.2 scraper marked dates as "processed" even on timeout,
+all dates the scraper attempted during the outage were added to
+progress.txt without producing data. The scraper was processing dates
+in reverse-chronological order, so the outage corrupted ~660 dates
+spanning roughly 2018-2021.
+
+Final v3.2 scrape stats:
+  Successful meetings:  851 (vs expected ~1,205)
+  Year distribution:    2017 partial; 2018-2021 COMPLETELY MISSING
+
+Recovery executed via scrapers/gap_fill_scraper_v3_2.py:
+  - Diffed v2.1 archive against v3.2 output to identify 356 missing dates
+  - Wrote dates to data/raw_csvs/gap_fill_dates.txt
+  - Gap-fill scraper uses MAX(existing_file_number)+1 for new files,
+    preventing collision with the existing 851 meetings
+  - CRITICAL DIFFERENCE FROM MAIN SCRAPER: network errors do NOT
+    mark dates as processed, so future network drops are self-recoverable
+  - Single-date Python one-liner used for the final 01/07/2012 retry
+
+Gap-fill stats:
+  Targets: 356 meetings
+  Successful: 355
+  Failed: 1 (01/07/2012, single timeout — recovered manually)
+  Runtime: ~6 hours
+
+Final merged state vs v2.1 archive:
+  Net: +2 meetings vs v2.1 (1207 v3.2 vs 1205 v2.1)
+  Reason: HKJC ran one new meeting between v2.1 (May 25) and v3.2
+          (May 30); v3.2 also recovered one 2014 meeting that v2.1
+          missed due to cosmetic header failure.
+
+--------------------------------------------------------------------------------
+KEY LEARNINGS RECORDED FOR FUTURE SESSIONS
+--------------------------------------------------------------------------------
+
+KL1 — TEST SCRAPES MUST INCLUDE QUANTITATIVE RATIO CHECKS
+  The v2.1 scraper's L1 bug went undetected through 30 hours of full-
+  scale scraping because the absolute pool counts looked "reasonable in
+  isolation." Only the ratio check (PLACE rows per race should be ~3.0)
+  revealed the systematic 33% coverage gap. ALL future scraper tests
+  must include per-pool ratio checks against expected per-race counts.
+
+KL2 — NETWORK ERROR HANDLING MUST DISTINGUISH TRANSIENT FROM PERMANENT
+  The v3.2 scraper treated all errors equivalently — marked the date
+  as processed and moved on. This is correct for permanent failures
+  (overseas pages, missing meetings) but catastrophic for transient
+  network issues. The gap-fill scraper fixed this by checking the
+  error string for 'NAME_NOT_RESOLVED' or 'timed out' and refusing to
+  mark such dates as processed. The main v3.2 scraper SHOULD be patched
+  similarly if ever re-run.
+
+KL3 — DNS FAILURES ARE THE MOST LIKELY MULTI-HOUR OUTAGE CAUSE
+  Residential internet has occasional sub-hour drops. Long scrapes
+  spanning overnight WILL encounter these. The gap-fill approach
+  (diff against a baseline, identify missing dates, retry only those)
+  is the correct general pattern for any long-running data acquisition.
+
+KL4 — RACING INCIDENT REPORTS STARTED 04 OCTOBER 2023
+  HKJC's "Racing Incident Report" table did not exist before this date.
+  Any FUTURE-1 work (LLM-based trouble extraction) is limited to
+  data from 2023/24 season onward — approximately 2.5 seasons available.
+  This is enough for features on the sealed holdout (2025/26) and the
+  final development season (2024/25) but insufficient for a walk-forward
+  5-year train window that includes incident features. FUTURE-1 may
+  need to be a feature only present for recent races, with the model
+  handling its absence gracefully.
+
+KL5 — HKJC PUBLISHES NON-BETTABLE TRAINING/EXHIBITION RACES
+  Conghua training meetings (CH venue) appear in result archives but
+  have no dividend tables. The ingest pipeline's is_bettable=0 logic
+  handles these correctly: race has results + metadata + zero
+  dividends → mark non-bettable. Current count: 7 non-bettable races
+  across 15 seasons (~0.06%).
+
+--------------------------------------------------------------------------------
+SCRAPER FILE INVENTORY
+--------------------------------------------------------------------------------
+Active (in scrapers/):
+  race_data_scraper_v3_2.py  — main 15-year scraper (with network bug)
+  gap_fill_scraper_v3_2.py   — targeted recovery scraper (network-safe)
+
+Archived (in archive/v2_1_scrape_2011_2026/ and earlier):
+  All v1, v2.0, v2.1, v3.0, v3.1 outputs and code
+
+--------------------------------------------------------------------------------
+NEXT — PHASE 55.3 WALK-FORWARD STATEFUL FEATURE REBUILD
+--------------------------------------------------------------------------------
+With a clean 15-season database in hand, Phase 55.3 begins the
+architecturally interesting work. Question to resolve:
+
+How do Elo, Glicko-2, and PageRank ratings get rebuilt inside each
+rolling 5-year train window without leakage?
+
+Three candidate approaches:
+  (i)   Rebuild from absolute start of data (2011/12) every season,
+        slice to train window for model fitting.
+        Maximum rating fidelity, maximum compute.
+  (ii)  Rebuild from window start with default 1500/initial values.
+        Faster, but introduces known bias for established horses.
+  (iii) Hybrid: rebuild from {window_start - K seasons} with K large
+        enough that initial-rating bias decays. Tune K empirically.
+
+Open for Phase 55.3 design discussion.
+
+================================================================================
+END PHASE 55.2b LOG ENTRY
+================================================================================

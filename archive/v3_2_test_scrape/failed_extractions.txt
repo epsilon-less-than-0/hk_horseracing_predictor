@@ -1,0 +1,3 @@
+24/05/2026	https://racing.hkjc.com/racing/information/English/racing/LocalResults.aspx?RaceDate=24/05/2026	timeout
+20/05/2026	https://racing.hkjc.com/racing/information/English/racing/LocalResults.aspx?RaceDate=20/05/2026	timeout
+17/05/2026	https://racing.hkjc.com/en-us/overseas/results?RaceDate=20260517&Racecourse=S3&RaceNo=1	empty_race_name

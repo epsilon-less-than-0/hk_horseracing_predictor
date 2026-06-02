@@ -1,0 +1,62 @@
+2026-05-25 17:41:09,586 - INFO - Generated 4 candidate race dates (11/04/2026 → 18/04/2026)
+2026-05-25 17:41:09,586 - INFO - Resume: 0 dates already processed.
+2026-05-25 17:41:28,634 - INFO - Checking 18/04/2026 ...
+2026-05-25 17:41:59,279 - INFO -   no races for 18/04/2026
+2026-05-25 17:41:59,279 - INFO - Checking 15/04/2026 ...
+2026-05-25 17:42:08,451 - INFO -   extracted RACE 1 (605) | 12 horses | 8 dividend rows
+2026-05-25 17:42:16,504 - INFO -   extracted RACE 2 (606) | 13 horses | 8 dividend rows
+2026-05-25 17:42:20,330 - INFO -   extracted RACE 3 (607) | 12 horses | 9 dividend rows
+2026-05-25 17:42:24,635 - INFO -   extracted RACE 4 (608) | 12 horses | 8 dividend rows
+2026-05-25 17:42:29,898 - INFO -   extracted RACE 5 (609) | 11 horses | 9 dividend rows
+2026-05-25 17:42:34,247 - INFO -   extracted RACE 6 (610) | 12 horses | 8 dividend rows
+2026-05-25 17:42:38,046 - INFO -   extracted RACE 7 (611) | 12 horses | 11 dividend rows
+2026-05-25 17:42:42,162 - INFO -   extracted RACE 8 (612) | 11 horses | 8 dividend rows
+2026-05-25 17:42:45,900 - INFO -   extracted RACE 9 (613) | 12 horses | 9 dividend rows
+2026-05-25 17:42:48,041 - INFO - Checking 12/04/2026 ...
+2026-05-25 17:42:52,167 - INFO -   extracted RACE 1 (594) | 6 horses | 7 dividend rows
+2026-05-25 17:43:00,534 - INFO -   extracted RACE 2 (595) | 14 horses | 8 dividend rows
+2026-05-25 17:43:05,966 - INFO -   extracted RACE 3 (596) | 14 horses | 9 dividend rows
+2026-05-25 17:43:11,601 - INFO -   extracted RACE 4 (597) | 14 horses | 8 dividend rows
+2026-05-25 17:43:15,676 - INFO -   extracted RACE 5 (598) | 12 horses | 9 dividend rows
+2026-05-25 17:43:19,980 - INFO -   extracted RACE 6 (599) | 12 horses | 8 dividend rows
+2026-05-25 17:43:24,880 - INFO -   extracted RACE 7 (600) | 14 horses | 11 dividend rows
+2026-05-25 17:43:29,476 - INFO -   extracted RACE 8 (601) | 12 horses | 8 dividend rows
+2026-05-25 17:43:33,425 - INFO -   extracted RACE 9 (602) | 12 horses | 9 dividend rows
+2026-05-25 17:43:37,463 - INFO -   extracted RACE 10 (603) | 12 horses | 8 dividend rows
+2026-05-25 17:43:43,516 - INFO -   extracted RACE 11 (604) | 12 horses | 9 dividend rows
+2026-05-25 17:43:45,520 - INFO - Checking 11/04/2026 ...
+2026-05-25 17:44:09,475 - INFO -   no races for 11/04/2026
+2026-05-25 17:44:09,575 - INFO - ============================================================
+2026-05-25 17:44:09,575 - INFO - SCRAPE COMPLETE | checked=4 successful=2 skipped=2
+2026-05-25 17:44:09,575 - INFO - ============================================================
+2026-05-25 17:50:01,347 - INFO - Generated 4 candidate race dates (11/04/2026 → 18/04/2026)
+2026-05-25 17:50:01,347 - INFO - Resume: 0 dates already processed.
+2026-05-25 17:50:03,175 - INFO - Checking 18/04/2026 ...
+2026-05-25 17:50:30,888 - INFO -   no races for 18/04/2026
+2026-05-25 17:50:30,888 - INFO - Checking 15/04/2026 ...
+2026-05-25 17:50:36,739 - INFO -   R1: RACE 1 (605) | 12 horses | 8 dividend rows
+2026-05-25 17:50:41,077 - INFO -   R2: RACE 2 (606) | 13 horses | 8 dividend rows
+2026-05-25 17:50:45,344 - INFO -   R3: RACE 3 (607) | 12 horses | 9 dividend rows
+2026-05-25 17:50:49,738 - INFO -   R4: RACE 4 (608) | 12 horses | 8 dividend rows
+2026-05-25 17:50:53,911 - INFO -   R5: RACE 5 (609) | 11 horses | 9 dividend rows
+2026-05-25 17:50:59,018 - INFO -   R6: RACE 6 (610) | 12 horses | 8 dividend rows
+2026-05-25 17:51:04,668 - INFO -   R7: RACE 7 (611) | 12 horses | 11 dividend rows
+2026-05-25 17:51:08,656 - INFO -   R8: RACE 8 (612) | 11 horses | 8 dividend rows
+2026-05-25 17:51:14,350 - INFO -   R9: RACE 9 (613) | 12 horses | 9 dividend rows
+2026-05-25 17:51:16,356 - INFO - Checking 12/04/2026 ...
+2026-05-25 17:51:20,829 - INFO -   R1: RACE 1 (594) | 6 horses | 7 dividend rows
+2026-05-25 17:51:26,066 - INFO -   R2: RACE 2 (595) | 14 horses | 8 dividend rows
+2026-05-25 17:51:30,954 - INFO -   R3: RACE 3 (596) | 14 horses | 9 dividend rows
+2026-05-25 17:51:34,965 - INFO -   R4: RACE 4 (597) | 14 horses | 8 dividend rows
+2026-05-25 17:51:40,652 - INFO -   R5: RACE 5 (598) | 12 horses | 9 dividend rows
+2026-05-25 17:51:45,260 - INFO -   R6: RACE 6 (599) | 12 horses | 8 dividend rows
+2026-05-25 17:51:50,880 - INFO -   R7: RACE 7 (600) | 14 horses | 11 dividend rows
+2026-05-25 17:51:55,410 - INFO -   R8: RACE 8 (601) | 12 horses | 8 dividend rows
+2026-05-25 17:52:03,100 - INFO -   R9: RACE 9 (602) | 12 horses | 9 dividend rows
+2026-05-25 17:52:08,920 - INFO -   R10: RACE 10 (603) | 12 horses | 8 dividend rows
+2026-05-25 17:52:16,247 - INFO -   R11: RACE 11 (604) | 12 horses | 9 dividend rows
+2026-05-25 17:52:18,252 - INFO - Checking 11/04/2026 ...
+2026-05-25 17:52:40,915 - INFO -   no races for 11/04/2026
+2026-05-25 17:52:41,042 - INFO - ============================================================
+2026-05-25 17:52:41,042 - INFO - SCRAPE COMPLETE | checked=4 successful=2 skipped=2
+2026-05-25 17:52:41,042 - INFO - ============================================================

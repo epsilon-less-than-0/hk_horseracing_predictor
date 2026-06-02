@@ -1,0 +1,153 @@
+2026-05-30 17:17:24,120 - INFO - ============================================================
+2026-05-30 17:17:24,120 - INFO - Phase 55.1 targeted re-scrape starting
+2026-05-30 17:17:24,120 - INFO - Targets: ['23/03/2019', '13/11/2024', '21/09/2025']
+2026-05-30 17:17:24,120 - INFO - ============================================================
+2026-05-30 17:17:24,713 - INFO -   23/03/2019 → meeting #1124
+2026-05-30 17:17:30,083 - INFO -   13/11/2024 → meeting #240
+2026-05-30 17:17:30,086 - INFO -   21/09/2025 → meeting #106
+2026-05-30 17:17:44,621 - INFO - --- Re-scraping 23/03/2019 (meeting #1124) ---
+2026-05-30 17:17:52,516 - INFO -   23/03/2019: 5 race URLs to fetch
+2026-05-30 17:17:52,804 - INFO -     R1: 6 horses, 0 dividend rows
+2026-05-30 17:17:57,267 - INFO -     R2: 10 horses, 0 dividend rows
+2026-05-30 17:18:01,031 - INFO -     R3: 10 horses, 0 dividend rows
+2026-05-30 17:18:05,514 - INFO -     R4: 10 horses, 0 dividend rows
+2026-05-30 17:18:09,808 - INFO -     R5: 10 horses, 0 dividend rows
+2026-05-30 17:18:09,904 - INFO -   23/03/2019: wrote 46 race rows, 0 dividend rows, 5 metadata rows
+2026-05-30 17:18:12,907 - INFO - --- Re-scraping 13/11/2024 (meeting #240) ---
+2026-05-30 17:18:23,496 - INFO -   13/11/2024: 9 race URLs to fetch
+2026-05-30 17:18:24,230 - INFO -     R1: 9 horses, 8 dividend rows
+2026-05-30 17:18:33,121 - INFO -     R2: 12 horses, 8 dividend rows
+2026-05-30 17:18:39,356 - INFO -     R3: 12 horses, 9 dividend rows
+2026-05-30 17:18:48,485 - INFO -     R4: 12 horses, 8 dividend rows
+2026-05-30 17:18:57,250 - INFO -     R5: 12 horses, 9 dividend rows
+2026-05-30 17:19:04,282 - INFO -     R6: 12 horses, 8 dividend rows
+2026-05-30 17:19:29,286 - WARNING - Header extraction failed: Message: no such element: Unable to locate element: {"method":"xpath","selector":"//div[4]/table"}
+  (Session info: chrome=148.0.7778.167); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+Stacktrace:
+#0 0x6006163a61da <unknown>
+#1 0x600615dbc629 <unknown>
+#2 0x600615e0ff47 <unknown>
+#3 0x600615e10271 <unknown>
+#4 0x600615e5abd4 <unknown>
+#5 0x600615e57d61 <unknown>
+#6 0x600615e03767 <unknown>
+#7 0x600615e04551 <unknown>
+#8 0x600616369a7b <unknown>
+#9 0x60061636cad3 <unknown>
+#10 0x600616357a3c <unknown>
+#11 0x60061636d279 <unknown>
+#12 0x600616340507 <unknown>
+#13 0x6006163938f8 <unknown>
+#14 0x600616393ae6 <unknown>
+#15 0x6006163a4bc3 <unknown>
+#16 0x74a100f2daa4 <unknown>
+#17 0x74a100fbac6c <unknown>
+
+2026-05-30 17:19:29,604 - INFO -     R7: 12 horses, 2 dividend rows
+2026-05-30 17:19:52,894 - WARNING - Header extraction failed: Message: no such element: Unable to locate element: {"method":"xpath","selector":"//div[4]/table"}
+  (Session info: chrome=148.0.7778.167); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+Stacktrace:
+#0 0x6006163a61da <unknown>
+#1 0x600615dbc629 <unknown>
+#2 0x600615e0ff47 <unknown>
+#3 0x600615e10271 <unknown>
+#4 0x600615e5abd4 <unknown>
+#5 0x600615e57d61 <unknown>
+#6 0x600615e03767 <unknown>
+#7 0x600615e04551 <unknown>
+#8 0x600616369a7b <unknown>
+#9 0x60061636cad3 <unknown>
+#10 0x600616357a3c <unknown>
+#11 0x60061636d279 <unknown>
+#12 0x600616340507 <unknown>
+#13 0x6006163938f8 <unknown>
+#14 0x600616393ae6 <unknown>
+#15 0x6006163a4bc3 <unknown>
+#16 0x74a100f2daa4 <unknown>
+#17 0x74a100fbac6c <unknown>
+
+2026-05-30 17:19:53,193 - INFO -     R8: 10 horses, 0 dividend rows
+2026-05-30 17:20:20,339 - WARNING - Header extraction failed: Message: no such element: Unable to locate element: {"method":"xpath","selector":"//div[4]/table"}
+  (Session info: chrome=148.0.7778.167); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+Stacktrace:
+#0 0x6006163a61da <unknown>
+#1 0x600615dbc629 <unknown>
+#2 0x600615e0ff47 <unknown>
+#3 0x600615e10271 <unknown>
+#4 0x600615e5abd4 <unknown>
+#5 0x600615e57d61 <unknown>
+#6 0x600615e03767 <unknown>
+#7 0x600615e04551 <unknown>
+#8 0x600616369a7b <unknown>
+#9 0x60061636cad3 <unknown>
+#10 0x600616357a3c <unknown>
+#11 0x60061636d279 <unknown>
+#12 0x600616340507 <unknown>
+#13 0x6006163938f8 <unknown>
+#14 0x600616393ae6 <unknown>
+#15 0x6006163a4bc3 <unknown>
+#16 0x74a100f2daa4 <unknown>
+#17 0x74a100fbac6c <unknown>
+
+2026-05-30 17:20:20,797 - INFO -     R9: 15 horses, 0 dividend rows
+2026-05-30 17:20:20,800 - INFO -   13/11/2024: wrote 106 race rows, 52 dividend rows, 9 metadata rows
+2026-05-30 17:20:23,803 - INFO - --- Re-scraping 21/09/2025 (meeting #106) ---
+2026-05-30 17:20:33,517 - INFO -   21/09/2025: 10 race URLs to fetch
+2026-05-30 17:20:34,418 - INFO -     R1: 10 horses, 8 dividend rows
+2026-05-30 17:20:46,191 - INFO -     R2: 11 horses, 9 dividend rows
+2026-05-30 17:20:57,161 - INFO -     R3: 12 horses, 8 dividend rows
+2026-05-30 17:21:03,987 - INFO -     R4: 13 horses, 9 dividend rows
+2026-05-30 17:21:10,473 - INFO -     R5: 14 horses, 8 dividend rows
+2026-05-30 17:21:16,608 - INFO -     R6: 12 horses, 11 dividend rows
+2026-05-30 17:21:24,462 - INFO -     R7: 14 horses, 8 dividend rows
+2026-05-30 17:21:29,733 - INFO -     R8: 12 horses, 9 dividend rows
+2026-05-30 17:21:52,729 - WARNING - Header extraction failed: Message: no such element: Unable to locate element: {"method":"xpath","selector":"//div[4]/table"}
+  (Session info: chrome=148.0.7778.167); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+Stacktrace:
+#0 0x6006163a61da <unknown>
+#1 0x600615dbc629 <unknown>
+#2 0x600615e0ff47 <unknown>
+#3 0x600615e10271 <unknown>
+#4 0x600615e5abd4 <unknown>
+#5 0x600615e57d61 <unknown>
+#6 0x600615e03767 <unknown>
+#7 0x600615e04551 <unknown>
+#8 0x600616369a7b <unknown>
+#9 0x60061636cad3 <unknown>
+#10 0x600616357a3c <unknown>
+#11 0x60061636d279 <unknown>
+#12 0x600616340507 <unknown>
+#13 0x6006163938f8 <unknown>
+#14 0x600616393ae6 <unknown>
+#15 0x6006163a4bc3 <unknown>
+#16 0x74a100f2daa4 <unknown>
+#17 0x74a100fbac6c <unknown>
+
+2026-05-30 17:21:53,026 - INFO -     R9: 10 horses, 0 dividend rows
+2026-05-30 17:22:16,288 - WARNING - Header extraction failed: Message: no such element: Unable to locate element: {"method":"xpath","selector":"//div[4]/table"}
+  (Session info: chrome=148.0.7778.167); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#nosuchelementexception
+Stacktrace:
+#0 0x6006163a61da <unknown>
+#1 0x600615dbc629 <unknown>
+#2 0x600615e0ff47 <unknown>
+#3 0x600615e10271 <unknown>
+#4 0x600615e5abd4 <unknown>
+#5 0x600615e57d61 <unknown>
+#6 0x600615e03767 <unknown>
+#7 0x600615e04551 <unknown>
+#8 0x600616369a7b <unknown>
+#9 0x60061636cad3 <unknown>
+#10 0x600616357a3c <unknown>
+#11 0x60061636d279 <unknown>
+#12 0x600616340507 <unknown>
+#13 0x6006163938f8 <unknown>
+#14 0x600616393ae6 <unknown>
+#15 0x6006163a4bc3 <unknown>
+#16 0x74a100f2daa4 <unknown>
+#17 0x74a100fbac6c <unknown>
+
+2026-05-30 17:22:16,656 - INFO -     R10: 15 horses, 0 dividend rows
+2026-05-30 17:22:16,658 - INFO -   21/09/2025: wrote 123 race rows, 70 dividend rows, 10 metadata rows
+2026-05-30 17:22:19,730 - INFO - ============================================================
+2026-05-30 17:22:19,730 - INFO - Re-scrape complete: 3/3 meetings updated
+2026-05-30 17:22:19,730 - INFO - ============================================================

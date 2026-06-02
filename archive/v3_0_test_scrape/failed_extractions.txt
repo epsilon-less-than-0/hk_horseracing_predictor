@@ -1,0 +1,3 @@
+24/05/2026	https://racing.hkjc.com/en-us/overseas/results?RaceDate=20260524&Racecourse=S2&RaceNo=1	empty_race_name
+24/05/2026	https://racing.hkjc.com/en-us/overseas/results?RaceDate=20260524&Racecourse=S2&RaceNo=2	empty_race_name
+17/05/2026	https://racing.hkjc.com/en-us/overseas/results?RaceDate=20260517&Racecourse=S3&RaceNo=1	empty_race_name

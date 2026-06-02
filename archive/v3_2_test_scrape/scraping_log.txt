@@ -1,0 +1,59 @@
+2026-05-30 20:40:59,949 - INFO - Generated 9 candidate race dates (10/05/2026 → 30/05/2026)
+2026-05-30 20:40:59,950 - INFO - Resume: 0 dates already processed.
+2026-05-30 20:41:00,606 - INFO - Checking 30/05/2026 ...
+2026-05-30 20:41:45,458 - INFO -   no races for 30/05/2026
+2026-05-30 20:41:45,458 - INFO - Checking 27/05/2026 ...
+2026-05-30 20:41:50,573 - INFO -   R1: RACE 1 (725) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:41:55,052 - INFO -   R2: RACE 2 (726) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:41:59,374 - INFO -   R3: RACE 3 (727) | 12 horses | 13 dividends | 12 incidents
+2026-05-30 20:42:03,725 - INFO -   R4: RACE 4 (728) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:42:07,852 - INFO -   R5: RACE 5 (729) | 10 horses | 13 dividends | 10 incidents
+2026-05-30 20:42:12,148 - INFO -   R6: RACE 6 (730) | 12 horses | 12 dividends | 11 incidents
+2026-05-30 20:42:16,579 - INFO -   R7: RACE 7 (731) | 12 horses | 15 dividends | 11 incidents
+2026-05-30 20:42:20,966 - INFO -   R8: RACE 8 (732) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:42:25,215 - INFO -   R9: RACE 9 (733) | 12 horses | 13 dividends | 12 incidents
+2026-05-30 20:42:27,220 - INFO - Checking 24/05/2026 ...
+2026-05-30 20:42:33,238 - INFO -   R1: RACE 1 (714) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:42:39,187 - INFO -   R2: RACE 2 (715) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:42:44,936 - INFO -   R3: RACE 3 (716) | 14 horses | 13 dividends | 14 incidents
+2026-05-30 20:42:50,463 - INFO -   R4: RACE 4 (717) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:42:56,222 - INFO -   R5: RACE 5 (718) | 14 horses | 13 dividends | 14 incidents
+2026-05-30 20:43:02,548 - INFO -   R6: RACE 6 (719) | 15 horses | 12 dividends | 14 incidents
+2026-05-30 20:43:07,306 - INFO -   R7: RACE 7 (720) | 14 horses | 14 dividends | 14 incidents
+2026-05-30 20:43:12,985 - INFO -   R8: RACE 8 (721) | 9 horses | 12 dividends | 9 incidents
+2026-05-30 20:43:42,991 - ERROR -   timeout on 24/05/2026
+2026-05-30 20:43:42,991 - INFO - Checking 23/05/2026 ...
+2026-05-30 20:44:05,485 - INFO -   no races for 23/05/2026
+2026-05-30 20:44:05,486 - INFO - Checking 20/05/2026 ...
+2026-05-30 20:44:23,168 - INFO -   R1: RACE 1 (705) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:44:53,172 - ERROR -   timeout on 20/05/2026
+2026-05-30 20:44:53,173 - INFO - Checking 17/05/2026 ...
+2026-05-30 20:44:59,867 - INFO -   R1: RACE 1 (694) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:45:04,336 - INFO -   R2: RACE 2 (695) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:45:20,489 - INFO -   R3: RACE 3 (696) | 12 horses | 13 dividends | 12 incidents
+2026-05-30 20:45:26,846 - INFO -   R4: RACE 4 (697) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:45:34,468 - INFO -   R5: RACE 5 (698) | 12 horses | 13 dividends | 12 incidents
+2026-05-30 20:45:42,417 - INFO -   R6: RACE 6 (699) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:45:48,070 - INFO -   R7: RACE 7 (700) | 14 horses | 15 dividends | 14 incidents
+2026-05-30 20:45:52,200 - INFO -   R8: RACE 8 (701) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:45:58,265 - INFO -   R9: RACE 9 (702) | 14 horses | 13 dividends | 14 incidents
+2026-05-30 20:46:03,944 - INFO -   R10: RACE 10 (703) | 14 horses | 12 dividends | 14 incidents
+2026-05-30 20:46:08,474 - INFO -   R11: RACE 11 (704) | 14 horses | 13 dividends | 14 incidents
+2026-05-30 20:47:13,693 - INFO -   R1:  | 0 horses | 0 dividends | 0 incidents
+2026-05-30 20:47:15,700 - INFO - Checking 16/05/2026 ...
+2026-05-30 20:47:38,712 - INFO -   no races for 16/05/2026
+2026-05-30 20:47:38,712 - INFO - Checking 13/05/2026 ...
+2026-05-30 20:47:43,396 - INFO -   R1: RACE 1 (685) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:47:47,811 - INFO -   R2: RACE 2 (686) | 13 horses | 12 dividends | 12 incidents
+2026-05-30 20:47:51,630 - INFO -   R3: RACE 3 (687) | 9 horses | 13 dividends | 9 incidents
+2026-05-30 20:47:56,263 - INFO -   R4: RACE 4 (688) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:48:02,022 - INFO -   R5: RACE 5 (689) | 10 horses | 13 dividends | 9 incidents
+2026-05-30 20:48:06,430 - INFO -   R6: RACE 6 (690) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:48:10,991 - INFO -   R7: RACE 7 (691) | 12 horses | 15 dividends | 12 incidents
+2026-05-30 20:48:15,280 - INFO -   R8: RACE 8 (692) | 12 horses | 12 dividends | 12 incidents
+2026-05-30 20:48:19,605 - INFO -   R9: RACE 9 (693) | 11 horses | 13 dividends | 11 incidents
+2026-05-30 20:48:21,610 - INFO - Checking 10/05/2026 ...
+2026-05-30 20:48:43,178 - INFO -   no races for 10/05/2026
+2026-05-30 20:48:43,251 - INFO - ============================================================
+2026-05-30 20:48:43,251 - INFO - SCRAPE COMPLETE | checked=9 successful=3 skipped=4
+2026-05-30 20:48:43,251 - INFO - ============================================================

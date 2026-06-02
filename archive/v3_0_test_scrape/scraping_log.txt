@@ -1,0 +1,56 @@
+2026-05-30 19:30:07,810 - INFO - Generated 6 candidate race dates (17/05/2026 → 30/05/2026)
+2026-05-30 19:30:07,810 - INFO - Resume: 0 dates already processed.
+2026-05-30 19:30:08,469 - INFO - Checking 30/05/2026 ...
+2026-05-30 19:30:55,463 - INFO -   no races for 30/05/2026
+2026-05-30 19:30:55,463 - INFO - Checking 27/05/2026 ...
+2026-05-30 19:31:00,196 - INFO -   R1: RACE 1 (725) | 12 horses | 13 dividend rows
+2026-05-30 19:31:06,425 - INFO -   R2: RACE 2 (726) | 12 horses | 15 dividend rows
+2026-05-30 19:31:12,824 - INFO -   R3: RACE 3 (727) | 12 horses | 16 dividend rows
+2026-05-30 19:31:17,587 - INFO -   R4: RACE 4 (728) | 12 horses | 15 dividend rows
+2026-05-30 19:31:21,814 - INFO -   R5: RACE 5 (729) | 10 horses | 18 dividend rows
+2026-05-30 19:31:26,128 - INFO -   R6: RACE 6 (730) | 12 horses | 15 dividend rows
+2026-05-30 19:31:31,136 - INFO -   R7: RACE 7 (731) | 12 horses | 18 dividend rows
+2026-05-30 19:31:36,071 - INFO -   R8: RACE 8 (732) | 12 horses | 15 dividend rows
+2026-05-30 19:31:40,835 - INFO -   R9: RACE 9 (733) | 12 horses | 20 dividend rows
+2026-05-30 19:31:42,919 - INFO - Checking 24/05/2026 ...
+2026-05-30 19:31:48,778 - INFO -   R1: RACE 1 (714) | 14 horses | 13 dividend rows
+2026-05-30 19:31:55,044 - INFO -   R2: RACE 2 (715) | 14 horses | 15 dividend rows
+2026-05-30 19:32:00,192 - INFO -   R3: RACE 3 (716) | 14 horses | 16 dividend rows
+2026-05-30 19:32:03,373 - INFO -   R4: RACE 4 (717) | 14 horses | 15 dividend rows
+2026-05-30 19:32:08,724 - INFO -   R5: RACE 5 (718) | 14 horses | 18 dividend rows
+2026-05-30 19:32:12,867 - INFO -   R6: RACE 6 (719) | 15 horses | 15 dividend rows
+2026-05-30 19:32:17,079 - INFO -   R7: RACE 7 (720) | 14 horses | 17 dividend rows
+2026-05-30 19:32:22,743 - INFO -   R8: RACE 8 (721) | 9 horses | 15 dividend rows
+2026-05-30 19:32:25,958 - INFO -   R9: RACE 9 (722) | 11 horses | 16 dividend rows
+2026-05-30 19:32:30,999 - INFO -   R10: RACE 10 (723) | 14 horses | 15 dividend rows
+2026-05-30 19:32:37,114 - INFO -   R11: RACE 11 (724) | 15 horses | 20 dividend rows
+2026-05-30 19:33:23,726 - INFO -   R1:  | 0 horses | 0 dividend rows
+2026-05-30 19:34:08,073 - INFO -   R2:  | 0 horses | 0 dividend rows
+2026-05-30 19:34:10,077 - INFO - Checking 23/05/2026 ...
+2026-05-30 19:34:32,973 - INFO -   no races for 23/05/2026
+2026-05-30 19:34:32,973 - INFO - Checking 20/05/2026 ...
+2026-05-30 19:34:40,829 - INFO -   R1: RACE 1 (705) | 12 horses | 13 dividend rows
+2026-05-30 19:34:44,913 - INFO -   R2: RACE 2 (706) | 12 horses | 15 dividend rows
+2026-05-30 19:34:49,145 - INFO -   R3: RACE 3 (707) | 13 horses | 16 dividend rows
+2026-05-30 19:34:53,711 - INFO -   R4: RACE 4 (708) | 13 horses | 15 dividend rows
+2026-05-30 19:34:58,621 - INFO -   R5: RACE 5 (709) | 12 horses | 18 dividend rows
+2026-05-30 19:35:03,005 - INFO -   R6: RACE 6 (710) | 12 horses | 15 dividend rows
+2026-05-30 19:35:08,373 - INFO -   R7: RACE 7 (711) | 12 horses | 18 dividend rows
+2026-05-30 19:35:14,124 - INFO -   R8: RACE 8 (712) | 12 horses | 15 dividend rows
+2026-05-30 19:35:18,486 - INFO -   R9: RACE 9 (713) | 12 horses | 20 dividend rows
+2026-05-30 19:35:20,490 - INFO - Checking 17/05/2026 ...
+2026-05-30 19:35:27,747 - INFO -   R1: RACE 1 (694) | 14 horses | 13 dividend rows
+2026-05-30 19:35:33,674 - INFO -   R2: RACE 2 (695) | 14 horses | 15 dividend rows
+2026-05-30 19:35:39,796 - INFO -   R3: RACE 3 (696) | 12 horses | 16 dividend rows
+2026-05-30 19:35:44,861 - INFO -   R4: RACE 4 (697) | 12 horses | 15 dividend rows
+2026-05-30 19:35:51,093 - INFO -   R5: RACE 5 (698) | 12 horses | 18 dividend rows
+2026-05-30 19:35:57,051 - INFO -   R6: RACE 6 (699) | 12 horses | 15 dividend rows
+2026-05-30 19:36:02,186 - INFO -   R7: RACE 7 (700) | 14 horses | 18 dividend rows
+2026-05-30 19:36:06,240 - INFO -   R8: RACE 8 (701) | 14 horses | 15 dividend rows
+2026-05-30 19:36:12,358 - INFO -   R9: RACE 9 (702) | 14 horses | 16 dividend rows
+2026-05-30 19:36:17,196 - INFO -   R10: RACE 10 (703) | 14 horses | 15 dividend rows
+2026-05-30 19:36:23,673 - INFO -   R11: RACE 11 (704) | 14 horses | 20 dividend rows
+2026-05-30 19:37:08,338 - INFO -   R1:  | 0 horses | 0 dividend rows
+2026-05-30 19:37:10,403 - INFO - ============================================================
+2026-05-30 19:37:10,403 - INFO - SCRAPE COMPLETE | checked=6 successful=4 skipped=2
+2026-05-30 19:37:10,403 - INFO - ============================================================
