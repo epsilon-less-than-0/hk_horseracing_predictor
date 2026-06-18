@@ -3,3 +3,10 @@ __pycache__/
 *.db
 *.csv
 *.json
+
+# Derived feature cache (regenerate with --rebuild-cache)
+data/feature_cache/
+
+# Run logs
+data/walk_forward_log.txt
+*_log.txt
