@@ -1376,3 +1376,157 @@ Wraps StatefulFeatureEngine into the full backtest:
 ================================================================================
 END PHASE 55.3 LOG ENTRY
 ================================================================================
+
+================================================================================
+=== PHASE 55.4: WALK-FORWARD BACKTEST ENGINE — COMPLETE (FIRST VERDICT) ===
+================================================================================
+Date Completed: [18 June 2026]
+Status: COMPLETE. First methodologically honest backtest of v31's Trio
+        logic delivered. VERDICT: v31's edge was an artifact.
+
+--------------------------------------------------------------------------------
+HEADLINE RESULT — TIER 2 DEVELOPMENT (9 seasons, 2016/17-2024/25)
+--------------------------------------------------------------------------------
+  Pooled bet-level ROI:   -21.66%
+  Bootstrap 95% CI:       [-32.46%, -9.90%]   <- ENTIRELY BELOW ZERO
+  Total bets:             4,362
+  Strike rate:            7.66%
+
+  The confidence interval lies entirely below zero. With 4,362 bets pooled
+  across 9 seasons, this is a statistically confident conclusion, NOT a
+  single-window fluke: v31's Trio strategy has a NEGATIVE true edge.
+
+Per-season ROI:
+  2016/17: -48.14%   2019/20: -41.48%   2022/23: -45.40%
+  2017/18:  -6.00%   2020/21: +13.85%   2023/24: -29.05%
+  2018/19: -17.92%   2021/22: -28.53%   2024/25: -15.50%
+  (8 of 9 negative; the lone positive season, 2020/21, is exactly the kind
+   of result that a single-window backtest could have mistaken for success.)
+
+--------------------------------------------------------------------------------
+INTERPRETATION — WHAT THE NUMBER MEANS
+--------------------------------------------------------------------------------
+v31 reported +40.17% ROI. Run faithfully (identical features, identical
+XGBRanker, identical Phase-53 desk, identical Harville hit-probability
+logic) but with the two corrections that define v32:
+    1. REAL Trio dividends for settlement (not synthetic Harville payouts)
+    2. WALK-FORWARD isolation (not a tuning-contaminated static window)
+...the same strategy returns -21.66%.
+
+The ~62-point gap between +40% and -22% is the quantitative measure of how
+much of v31's reported edge was artifact:
+  - Synthetic payouts created a circular self-validation (the desk could
+    not lose to its own Harville pricing model) — v31 Finding A.
+  - 50+ rounds of human tuning on the 2023-2026 window destroyed its
+    out-of-sample validity — v31 Finding B.
+  - The settlement bug averaged combo odds instead of paying the winning
+    ticket's real price — v31 Finding C.
+
+The sealed-holdout protocol and real-dividend settlement were built
+specifically to detect this class of self-deception. They worked. The
+strategy was identified as unprofitable BEFORE any capital was risked.
+This is the protocol succeeding, not failing.
+
+--------------------------------------------------------------------------------
+STRUCTURAL READ — WHY IT LOSES
+--------------------------------------------------------------------------------
+The desk bets 6 tickets/race (1 anchor x C(4,2)=6 leg pairs). To profit,
+the trio must hit often enough that real dividends cover 6x the per-ticket
+stake plus the ~23% pool takeout. At 7.66% block strike with avg winning
+odds ~60, the arithmetic does not close: ~1 hit per 13 blocks, and the
+winning dividends are not large enough on average to cover the 12 misses
+plus rake. The "longshot legs >= 7.0 odds" rule (betting the public
+mis-prices longshots) does not deliver a high enough hit rate to
+compensate for its combinatorial cost.
+
+--------------------------------------------------------------------------------
+ENGINEERING NOTES
+--------------------------------------------------------------------------------
+1. PER-DAY PAGERANK FIDELITY FIX
+   First engine draft computed PageRank per-RACE. v31's EquineNetworkEngineer
+   computed it per-DAY (groupby 'date', network snapshotted before the day's
+   results are added). Corrected to per-day in engine v2 (use_daily_pr_freeze).
+   This is BOTH more faithful to v31 AND ~10x faster. The fix moved the
+   2018/19 pooled per-bet ROI from -9.98% to -2.87%, confirming PageRank is
+   a load-bearing feature in desk selection. Only PageRank is per-day;
+   Elo/Glicko/pace/momentum/physical remain per-race (matching v31's
+   dataprep.py).
+
+2. FEATURE CACHE (performance)
+   Under Candidate 1, a race's snapshot is season-independent (always
+   "replay 2011 -> that race"). Snapshots are computed ONCE, pickled to
+   data/feature_cache/feature_cache_through_<end>.pkl (129,511 rows, 30MB),
+   and sliced per season. Full 9-season development pass now runs in ~70
+   seconds after a one-time ~8.5-minute cache build. Rebuild only on FEATURE
+   changes (--rebuild-cache); desk-parameter changes reuse the cache.
+
+3. SEAL PROTECTION (structural)
+   The development cache is built only THROUGH 2025-08-31 (end of 2024/25).
+   It physically contains NO 2025/26 snapshots, making accidental seal-break
+   during development impossible. The sealed run builds a separate cache
+   (through 2026) and is gated behind a typed 'SEAL BREAK' confirmation.
+
+4. DATA LINEAGE VERIFIED
+   Confirmed the engine ran against the post-gap-fill, L1-fixed DB:
+   race_results=137,982, exotic_dividends=145,606, PLACE=3.0/race,
+   tables = {race_results, exotic_dividends, race_metadata} only (no stale
+   v31 ml_features tables). Cache (Jun 18) newer than DB (Jun 02).
+
+--------------------------------------------------------------------------------
+VALIDATED DESIGN DECISIONS (carried from 55.3, confirmed in 55.4)
+--------------------------------------------------------------------------------
+  - Hit probability: Harville on ENGINE calibrated win-probs.
+  - EV trigger + Kelly sizing: Harville synthetic payout from PUBLIC odds
+    (pre-race, rake 0.23) — faithful to v31, NO look-ahead.
+  - Settlement: REAL clean Trio dividends only. Filter:
+      combo NOT LIKE '%/%' AND combo GLOB '*[0-9]*'
+      AND combo NOT GLOB '*[A-Za-z]*'
+    (removes 5,733 Triple-Trio compound rows from the 17,089 'TRIO' rows,
+     leaving 11,356 clean single-race Trios). Dead-heats (42 races with 2
+     winning combos) handled: a ticket wins if it matches ANY winning combo.
+  - Settlement math: winning combo's OWN dividend, per-$10 unit, summed
+    across any winning tickets (fixes v31 Finding C).
+
+--------------------------------------------------------------------------------
+INVARIANTS — STILL IN FORCE
+--------------------------------------------------------------------------------
+  1. 2025/26 SEALED. Untouched. Not run. Reserved for a frozen, PROMISING
+     v32 — and this baseline v32 is NOT promising, so the seal stays shut.
+  2. REAL DIVIDENDS ONLY for settlement. Honored.
+  3. WALK-FORWARD ROLLING (Candidate 1). Honored.
+  4. CORRECT SETTLEMENT MATH. Honored (Finding C fixed).
+  5. v31 +40.17% is NOT a benchmark. Confirmed: it was artifact.
+  6. Every train/test query filters is_bettable=1. Honored.
+
+  NEW INVARIANT #7 (established this phase):
+     The v32 BASELINE is -21.66% pooled (CI [-32.46%, -9.90%]). This is the
+     number any future v32.x desk/feature change must BEAT to claim progress.
+     Do not compare future results to v31's +40.17% (artifact). Compare to
+     -21.66%.
+
+--------------------------------------------------------------------------------
+NEXT — PHASE 55.5: TIER 2 ITERATION (research the edge)
+--------------------------------------------------------------------------------
+The harness is fast, leak-free, and honestly scored. -21.66% is the baseline
+to beat. Candidate directions (each testable in ~5 min against the cache):
+
+  A. POOL CHANGE (highest priority). Trio's 6-ticket combinatorial cost may
+     be structurally uneconomic. Redirect the SAME model to a cheaper pool
+     (Quinella or Quinella-Place: 2 horses, far less coverage cost). The
+     L1 fix gave full QP coverage (3.0/race) precisely for this test. This
+     isolates "is it the MODEL or the BET STRUCTURE that loses?"
+  B. SELECTIVITY. 480 bets/season is high. A stricter EV threshold or a
+     model-confidence gate might keep only genuinely +EV races.
+  C. LEG CONSTRUCTION. The odds>=7.0 longshot-leg rule demonstrably loses.
+     Test other odds bands or favored-leg construction.
+  D. FEATURE INTERROGATION. SHAP on the walk-forward model; toggle the
+     physical deltas (the 55.3 assumption); test whether signal is weak or
+     execution is bleeding.
+
+RECOMMENDATION: Start with A (pool change). The most likely single cause of
+a 7.66%-strike strategy losing is that 6 Trio combinations per race is too
+expensive against the rake. One desk parameter change; cache already built.
+
+================================================================================
+END PHASE 55.4 LOG ENTRY
+================================================================================
